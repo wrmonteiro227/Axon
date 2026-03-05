@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AXON - Gestão Premium</title>
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#d4af37">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AXON">
+    <link rel="apple-touch-icon" href="icon-192.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -26,7 +30,7 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             overflow-x: hidden;
-            /* Ajustes para App Android */
+            /* Ajustes para App Android/iOS */
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             padding-bottom: env(safe-area-inset-bottom);
@@ -630,7 +634,7 @@
         }
         renderizar();
 
-        // REGISTRO DE SERVICE WORKER PARA TWA
+        // --- REGISTRO DE SERVICE WORKER PARA ATALHO NA TELA INICIAL ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
