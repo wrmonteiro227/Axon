@@ -16,7 +16,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        /* --- IDENTIDADE VISUAL AXON --- */
         :root {
             --dourado: #d4af37;
             --preto-profundo: #050505;
@@ -35,7 +34,6 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* Barra Superior Sólida AXON */
         .barra-topo {
             background-color: #000;
             height: calc(70px + env(safe-area-inset-top));
@@ -57,7 +55,6 @@
             text-transform: uppercase;
         }
 
-        /* Menu de Navegação */
         .menu-abas {
             display: flex;
             justify-content: flex-start;
@@ -83,13 +80,11 @@
         }
         .item-aba.ativa { color: var(--dourado); border-bottom: 3px solid var(--dourado); }
 
-        /* Dashboard de Resumo */
         .grid-resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
         .resumo-card { background: #000; border: 1px solid rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 10px; text-align: center; }
         .resumo-label { color: #666; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
         .resumo-valor { color: var(--dourado); font-weight: 900; font-size: 1.1rem; }
 
-        /* Estilo de Cards */
         .card-axon {
             background: var(--cinza-card);
             border: 1px solid rgba(212, 175, 55, 0.15);
@@ -118,11 +113,39 @@
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        .axon-input {
-            background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; outline: none; font-size: 0.85rem;
+        /* Estilo para Inputs com Botão de Envio */
+        .container-input-btn {
+            display: flex;
+            gap: 8px;
+            width: 100%;
         }
 
-        /* --- BOTÃO FLUTUANTE DE DOWNLOAD --- */
+        .axon-input {
+            background: #000;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.85rem;
+            flex-grow: 1;
+        }
+
+        .btn-enviar-input {
+            background: var(--dourado);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            width: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-enviar-input:active { transform: scale(0.9); }
+
         #btn-download-axon {
             position: fixed;
             bottom: 30px;
@@ -132,7 +155,7 @@
             width: 65px;
             height: 65px;
             border-radius: 50%;
-            display: none; /* Inicia oculto e aparece via JS */
+            display: none;
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
@@ -161,6 +184,10 @@
         .dash-cofre { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); border: 2px solid var(--dourado); padding: 40px 20px; text-align: center; border-radius: 20px; margin-bottom: 30px; }
         .valor-acumulado { font-size: 3.5rem; font-weight: 900; color: var(--dourado); text-shadow: 0 0 25px rgba(212, 175, 55, 0.4); }
 
+        .balao-ideia { background: #0d0d0d; border: 1px solid #222; border-left: 4px solid var(--dourado); border-radius: 8px; margin-bottom: 20px; }
+        .header-ideia { background: #151515; padding: 8px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
+        .corpo-ideia { padding: 15px; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #d1d5db; white-space: pre-wrap; }
+
         @media (max-width: 768px) {
             .grid-resumo { grid-template-columns: 1fr; }
             .valor-acumulado { font-size: 2.2rem; }
@@ -187,21 +214,54 @@
     </nav>
 
     <main class="p-4 md:p-8 max-w-5xl mx-auto">
+        
         <section id="aba-recebimentos" class="secao-conteudo ativa">
             <div class="grid-resumo">
                 <div class="resumo-card"><div class="resumo-label">A Receber</div><div id="total-receber" class="resumo-valor">R$ 0,00</div></div>
                 <div class="resumo-card"><div class="resumo-label">Total Recebido</div><div id="total-receb-pago" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
                 <div class="resumo-card"><div class="resumo-label">Em Atraso</div><div id="total-receb-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
             </div>
+            
             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Quem está me devendo</h2>
-                <div id="lista-quem-deve" class="mb-6"></div>
-                <div class="grid flex flex-col gap-2">
-                    <input type="text" id="reg-nome" class="axon-input" placeholder="DEVEDOR:">
-                    <input type="text" id="reg-valor" class="axon-input" placeholder="VALOR:">
-                    <input type="text" id="reg-data" class="axon-input" placeholder="DATA:">
-                    <button onclick="registrarDivida()" class="btn-axon">Registrar</button>
+                <h2 class="titulo-lista"><span>●</span> Controle de Status</h2>
+                <div id="lista-status" class="mb-6"></div>
+                <div class="container-input-btn">
+                    <input type="text" id="input-update" class="axon-input" placeholder="Ex: Raphael me pagou 50">
+                    <button class="btn-enviar-input" onclick="processarComando('input-update', db_financeiro)">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
+                    </button>
                 </div>
+            </div>
+        </section>
+
+        <section id="aba-pagamentos" class="secao-conteudo">
+            <div class="grid-resumo">
+                <div class="resumo-card"><div class="resumo-label">A Pagar</div><div id="total-pagar" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+                <div class="resumo-card"><div class="resumo-label">Total Pago</div><div id="total-pago-realizado" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
+                <div class="resumo-card"><div class="resumo-label">Em Atraso</div><div id="total-pagar-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+            </div>
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Controle de Pagamentos</h2>
+                <div id="lista-status-pagamentos" class="mb-6"></div>
+                <div class="container-input-btn">
+                    <input type="text" id="input-update-pag" class="axon-input" placeholder="Ex: Paguei o Aluguel">
+                    <button class="btn-enviar-input" onclick="processarComando('input-update-pag', db_pagamentos)">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="aba-tarefas" class="secao-conteudo">
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Minhas Tarefas</h2>
+                <div class="container-input-btn mb-6">
+                    <input type="text" id="input-tarefa" class="axon-input" placeholder="Ex: ir para igreja sabado">
+                    <button class="btn-enviar-input" onclick="registrarTarefaBotao()">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                    </button>
+                </div>
+                <div id="lista-tarefas"></div>
             </div>
         </section>
 
@@ -210,43 +270,16 @@
                 <div class="resumo-label">PATRIMÔNIO ACUMULADO</div>
                 <div id="valor-cofre-total" class="valor-acumulado">R$ 0,00</div>
             </div>
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> NOVO APORTE</h2>
-                <div class="grid flex flex-col gap-2">
-                    <input type="text" id="cofre-valor" class="axon-input" placeholder="VALOR:">
-                    <input type="text" id="cofre-data" class="axon-input" placeholder="DATA:">
-                    <button onclick="registrarNoCofre()" class="btn-axon">GUARDAR</button>
-                </div>
-            </div>
             <div id="lista-cofre" class="space-y-3"></div>
-        </section>
-
-        <section id="aba-pagamentos" class="secao-conteudo">
-             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Contas a Pagar</h2>
-                <div id="lista-contas-pagar" class="mb-6"></div>
-                <div class="grid flex flex-col gap-2">
-                    <input type="text" id="pag-nome" class="axon-input" placeholder="DESCRIÇÃO:">
-                    <input type="text" id="pag-valor" class="axon-input" placeholder="VALOR:">
-                    <input type="text" id="pag-data" class="axon-input" placeholder="DATA:">
-                    <button onclick="registrarPagamento()" class="btn-axon">Registrar</button>
-                </div>
-            </div>
-        </section>
-        
-        <section id="aba-tarefas" class="secao-conteudo">
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Tarefas Diárias</h2>
-                <input type="text" id="input-tarefa" class="axon-input w-full" placeholder="Ex: ir para igreja sabado">
-                <div id="lista-tarefas" class="mt-6"></div>
-            </div>
         </section>
 
         <section id="aba-ideias" class="secao-conteudo">
             <div class="card-axon">
                 <h2 class="titulo-lista"><span>●</span> Mural de Insights</h2>
                 <textarea id="input-ideia" class="axon-input w-full h-32" placeholder="Escreva sua ideia..."></textarea>
-                <button onclick="registrarIdeia()" class="btn-axon mt-2">Salvar</button>
+                <div class="flex justify-end mt-3">
+                    <button onclick="registrarIdeia()" class="btn-axon">SALVAR INSIGHT</button>
+                </div>
                 <div id="mural-ideias" class="mt-6"></div>
             </div>
         </section>
@@ -255,7 +288,6 @@
     <script>
         function abrirAba(id, btn) { document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa')); document.querySelectorAll('.item-aba').forEach(b => b.classList.remove('ativa')); document.getElementById(id).classList.add('ativa'); btn.classList.add('ativa'); }
 
-        // BANCO DE DADOS
         let db_financeiro = JSON.parse(localStorage.getItem('axon_db')) || [];
         let db_cofre = JSON.parse(localStorage.getItem('axon_cofre')) || [];
         let db_pagamentos = JSON.parse(localStorage.getItem('axon_pagamentos')) || [];
@@ -263,49 +295,98 @@
         let db_ideias = JSON.parse(localStorage.getItem('axon_ideias')) || [];
 
         function formatarDataHoje() { const h = new Date(); return `${String(h.getDate()).padStart(2,'0')}/${String(h.getMonth()+1).padStart(2,'0')}/${h.getFullYear()}`; }
-        function salvarTudo() { localStorage.setItem('axon_db', JSON.stringify(db_financeiro)); localStorage.setItem('axon_cofre', JSON.stringify(db_cofre)); localStorage.setItem('axon_pagamentos', JSON.stringify(db_pagamentos)); localStorage.setItem('axon_tarefas', JSON.stringify(db_tarefas)); localStorage.setItem('axon_ideias', JSON.stringify(db_ideias)); renderizar(); }
+        
+        function tratarDataAxon(valor) {
+            let txt = valor.toLowerCase().trim();
+            if (!txt) return formatarDataHoje();
+            const hoje = new Date();
+            const diasSemana = { 'domingo': 0, 'segunda': 1, 'terça': 2, 'terca': 2, 'quarta': 3, 'quinta': 4, 'sexta': 5, 'sábado': 6, 'sabado': 6 };
+            if (diasSemana[txt] !== undefined) {
+                let dataResult = new Date();
+                let diff = (diasSemana[txt] + 7 - hoje.getDay()) % 7;
+                if (diff === 0) diff = 7;
+                dataResult.setDate(hoje.getDate() + diff);
+                return `${String(dataResult.getDate()).padStart(2, '0')}/${String(dataResult.getMonth() + 1).padStart(2, '0')}/${dataResult.getFullYear()}`;
+            }
+            let apenasNumeros = txt.replace(/\D/g, "");
+            if (apenasNumeros.length === 4) return apenasNumeros.substring(0, 2) + "/" + apenasNumeros.substring(2, 4) + "/" + hoje.getFullYear();
+            if (apenasNumeros.length === 8) return apenasNumeros.substring(0, 2) + "/" + apenasNumeros.substring(2, 4) + "/" + apenasNumeros.substring(4, 8);
+            return valor || formatarDataHoje();
+        }
 
-        // RENDERIZAÇÃO BÁSICA
+        function salvarTudo() { 
+            localStorage.setItem('axon_db', JSON.stringify(db_financeiro)); 
+            localStorage.setItem('axon_cofre', JSON.stringify(db_cofre)); 
+            localStorage.setItem('axon_pagamentos', JSON.stringify(db_pagamentos)); 
+            localStorage.setItem('axon_tarefas', JSON.stringify(db_tarefas)); 
+            localStorage.setItem('axon_ideias', JSON.stringify(db_ideias)); 
+            renderizar(); 
+        }
+
+        // --- LÓGICA DE COMANDO COM REGEX (CONSOLIDADA) ---
+        function processarComando(inputId, db) {
+            const input = document.getElementById(inputId);
+            const comando = input.value.toLowerCase();
+            if (!comando) return;
+
+            const p1 = comando.match(/(.+?)\s+(?:me\s+)?pagou\s*([\d.]+)?/i);
+            const p2 = comando.match(/(?:me\s+)?pagou\s+(?:o\s+|a\s+)?(.+?)\s*([\d.]+)?$/i);
+            const p3 = comando.match(/(.+?)\s+(?:paguei|pago)\s*([\d.]+)?/i);
+            const p4 = comando.match(/(?:paguei|pago)\s+(?:o\s+|a\s+)?(.+?)\s*([\d.]+)?$/i);
+            
+            let nome = ""; const m = p1 || p2 || p3 || p4; if (m) { nome = (m[1] || m[2]).trim(); }
+            
+            if (nome) {
+                const alvo = db.find(r => r.nome.toLowerCase().includes(nome) && r.status !== 'pago');
+                if (alvo) alvo.status = 'pago';
+            }
+            input.value = ''; salvarTudo();
+        }
+
+        function registrarTarefaBotao() {
+            const el = document.getElementById('input-tarefa');
+            const texto = el.value;
+            if (!texto) return;
+            const regex = /(.+?)\s+(\d{4}|\d{8}|segunda|terça|terca|quarta|quinta|sexta|sábado|sabado|domingo)$/i;
+            const match = texto.match(regex);
+            if (match) db_tarefas.push({ id: Date.now(), nome: match[1].trim(), data: tratarDataAxon(match[2]), status: 'pendente' });
+            else db_tarefas.push({ id: Date.now(), nome: texto.trim(), data: formatarDataHoje(), status: 'pendente' });
+            el.value = ''; salvarTudo();
+        }
+
         function renderizar() {
-            const listCofre = document.getElementById('lista-cofre'); if(listCofre) listCofre.innerHTML = '';
-            let totalCof = 0;
-            db_cofre.forEach(i => { totalCof += parseFloat(i.valor.replace(',','.')); listCofre.innerHTML += `<div class="item-axon"><div>${i.data}</div><div class="font-black text-white">R$ ${i.valor}</div></div>`; });
-            document.getElementById('valor-cofre-total').innerText = `R$ ${totalCof.toLocaleString('pt-BR')}`;
-            // ... (Demais renderizações simplificadas para o exemplo carregar)
+            // Render Financeiro (Recebimentos)
+            const listStatus = document.getElementById('lista-status');
+            listStatus.innerHTML = ''; let sP = 0, sPa = 0, sA = 0;
+            db_financeiro.forEach(i => {
+                const v = parseFloat(i.valor.replace('.','').replace(',','.')) || 0;
+                if (i.status === 'pago') sPa += v; else { sP += v; if(i.status === 'atrasado') sA += v; }
+                let sC = i.status === 'pago' ? 'badge-pago' : 'badge-pendente';
+                listStatus.innerHTML += `<div class="item-axon"><div>${i.nome}<br><small>${i.data}</small></div><div class="flex items-center gap-3"><span class="font-bold">R$ ${i.valor}</span><span class="badge ${sC}">${i.status}</span></div></div>`;
+            });
+            document.getElementById('total-receber').innerText = `R$ ${sP.toLocaleString('pt-BR')}`;
+            document.getElementById('total-receb-pago').innerText = `R$ ${sPa.toLocaleString('pt-BR')}`;
+            document.getElementById('total-receb-atraso').innerText = `R$ ${sA.toLocaleString('pt-BR')}`;
+
+            // Render Tarefas
+            const listTarefas = document.getElementById('lista-tarefas');
+            listTarefas.innerHTML = '';
+            db_tarefas.forEach(t => {
+                listTarefas.innerHTML += `<div class="item-axon"><div>${t.nome}</div><div>${t.data}</div></div>`;
+            });
         }
         renderizar();
 
-        // --- LÓGICA DO BOTÃO FORÇADO ---
+        // Download Prompt
         let deferredPrompt;
-        const btnDownload = document.getElementById('btn-download-axon');
-
-        // Monitora o evento de PWA
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+        setTimeout(() => { document.getElementById('btn-download-axon').style.display = 'flex'; }, 5000);
+        document.getElementById('btn-download-axon').addEventListener('click', async () => {
+            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } 
+            else { alert("Use o menu do navegador para 'Adicionar à Tela de Início'."); }
         });
 
-        // FORÇA o botão a aparecer após 5 segundos, independente de qualquer erro
-        setTimeout(() => {
-            btnDownload.style.display = 'flex';
-        }, 5000);
-
-        btnDownload.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') btnDownload.style.display = 'none';
-                deferredPrompt = null;
-            } else {
-                // Caso não seja Android ou não tenha PWA validado ainda
-                alert("INSTALAR AXON:\n\nAndroid: Clique nos 3 pontinhos do Chrome e 'Instalar Aplicativo'.\n\niOS (iPhone): Clique no botão de compartilhar (quadrado com seta) e 'Adicionar à Tela de Início'.");
-            }
-        });
-
-        // SERVICE WORKER
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
-        }
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
     </script>
 </body>
 </html>
