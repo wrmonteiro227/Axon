@@ -16,6 +16,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        /* --- IDENTIDADE VISUAL AXON --- */
         :root {
             --dourado: #d4af37;
             --preto-profundo: #050505;
@@ -113,46 +114,30 @@
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* --- ESTILO DOS INPUTS COM BOTÃO AO LADO --- */
+        /* --- BOTÃO DE ENVIO NAS CAIXAS --- */
         .axon-input-group {
             display: flex;
             gap: 8px;
             margin-bottom: 10px;
-            width: 100%;
         }
 
         .axon-input {
             background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; outline: none; font-size: 0.85rem; flex-grow: 1;
         }
 
-        .btn-send {
+        .btn-enviar-axon {
             background: var(--dourado);
             color: #000;
             border: none;
             border-radius: 8px;
-            width: 50px;
+            padding: 0 15px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: 0.2s;
+            transition: 0.3s;
         }
-        .btn-send:active { transform: scale(0.9); }
-
-        .badge {
-            font-size: 0.65rem;
-            font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 5px;
-            text-transform: uppercase;
-            cursor: pointer; /* Botão funcionando */
-        }
-        .badge-pendente { background: rgba(212, 175, 55, 0.1); color: var(--dourado); border: 1px solid var(--dourado); }
-        .badge-pago { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
-        .badge-atrasado { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
-
-        .btn-lixeira { color: #444; transition: 0.3s; cursor: pointer; font-size: 1.1rem; padding-left: 10px; }
-        .btn-lixeira:hover { color: #ef4444; }
+        .btn-enviar-axon:active { transform: scale(0.9); }
 
         #btn-download-axon {
             position: fixed; bottom: 30px; right: 20px;
@@ -162,20 +147,33 @@
             box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
             z-index: 9999; border: 3px solid #fff; animation: bounce 2s infinite;
         }
+
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-12px);} 60% {transform: translateY(-6px);} }
 
         .secao-conteudo { display: none; animation: fadeIn 0.4s ease-out; }
         .secao-conteudo.ativa { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .dash-cofre { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); border: 2px solid var(--dourado); padding: 40px 20px; text-align: center; border-radius: 20px; margin-bottom: 30px; }
-        .valor-acumulado { font-size: 3.5rem; font-weight: 900; color: var(--dourado); text-shadow: 0 0 25px rgba(212, 175, 55, 0.4); }
+        .btn-axon { background: var(--dourado); color: #000; font-weight: bold; padding: 12px 20px; border-radius: 8px; font-size: 0.75rem; text-transform: uppercase; cursor: pointer; border: none; }
+        .badge { font-size: 0.65rem; font-weight: 800; padding: 4px 10px; border-radius: 5px; text-transform: uppercase; cursor: pointer; }
+        .badge-pendente { background: rgba(212, 175, 55, 0.1); color: var(--dourado); border: 1px solid var(--dourado); }
+        .badge-pago { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
+        .badge-atrasado { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
+
+        .btn-lixeira { color: #444; cursor: pointer; font-size: 1.1rem; padding-left: 10px; transition: 0.3s; }
+        .btn-lixeira:hover { color: #ef4444; }
+
+        .dash-cofre { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); border: 2px solid var(--dourado); padding: 40px 20px; text-align: center; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.1); }
+        .valor-acumulado { font-size: 3.5rem; font-weight: 900; color: var(--dourado); text-shadow: 0 0 25px rgba(212, 175, 55, 0.4); letter-spacing: -1px; }
 
         .balao-ideia { background: #0d0d0d; border: 1px solid #222; border-left: 4px solid var(--dourado); border-radius: 8px; margin-bottom: 20px; }
         .header-ideia { background: #151515; padding: 8px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
         .corpo-ideia { padding: 15px; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #d1d5db; white-space: pre-wrap; }
 
-        @media (max-width: 768px) { .grid-resumo { grid-template-columns: 1fr; } .valor-acumulado { font-size: 2.2rem; } }
+        @media (max-width: 768px) {
+            .grid-resumo { grid-template-columns: 1fr; }
+            .valor-acumulado { font-size: 2.2rem; }
+        }
     </style>
 </head>
 <body>
@@ -209,7 +207,7 @@
                 <div class="axon-input-group"><input type="text" id="reg-valor" class="axon-input" placeholder="VALOR:"></div>
                 <div class="axon-input-group">
                     <input type="text" id="reg-data" class="axon-input" placeholder="DATA:">
-                    <button class="btn-send" onclick="registrarDivida()">
+                    <button class="btn-enviar-axon" onclick="registrarDivida()">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z"/></svg>
                     </button>
                 </div>
@@ -219,8 +217,8 @@
                 <h2 class="titulo-lista"><span>●</span> Controle de Status</h2>
                 <div id="lista-status" class="mb-6"></div>
                 <div class="axon-input-group">
-                    <input type="text" id="input-update" class="axon-input" placeholder="Comando rápido (Ex: Raphael me pagou)">
-                    <button class="btn-send" onclick="processarComando('input-update', db_financeiro)">
+                    <input type="text" id="input-update" class="axon-input" placeholder="Comando rápido...">
+                    <button class="btn-enviar-axon" onclick="processarComando('input-update', db_financeiro)">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
                     </button>
                 </div>
@@ -228,15 +226,29 @@
         </section>
 
         <section id="aba-pagamentos" class="secao-conteudo">
-             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Contas a Pagar</h2>
-                <div id="lista-contas-pagar" class="mb-6"></div>
+            <div class="grid-resumo">
+                <div class="resumo-card"><div class="resumo-label">Total a Pagar</div><div id="total-pagar" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+                <div class="resumo-card"><div class="resumo-label">Total Pago</div><div id="total-pago-realizado" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
+                <div class="resumo-card"><div class="resumo-label">Boletos em Atraso</div><div id="total-pagar-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+            </div>
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Minhas Contas a Pagar</h2>
                 <div class="axon-input-group"><input type="text" id="pag-nome" class="axon-input" placeholder="DESCRIÇÃO:"></div>
                 <div class="axon-input-group"><input type="text" id="pag-valor" class="axon-input" placeholder="VALOR:"></div>
                 <div class="axon-input-group">
                     <input type="text" id="pag-data" class="axon-input" placeholder="DATA:">
-                    <button class="btn-send" onclick="registrarPagamento()">
+                    <button class="btn-enviar-axon" onclick="registrarPagamento()">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Controle de Status (Pagamentos)</h2>
+                <div id="lista-status-pagamentos" class="mb-6"></div>
+                <div class="axon-input-group">
+                    <input type="text" id="input-update-pag" class="axon-input" placeholder="Ex: Paguei o Aluguel">
+                    <button class="btn-enviar-axon" onclick="processarComando('input-update-pag', db_pagamentos)">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
                     </button>
                 </div>
             </div>
@@ -244,14 +256,18 @@
         
         <section id="aba-tarefas" class="secao-conteudo">
             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Minhas Tarefas</h2>
+                <h2 class="titulo-lista"><span>●</span> Minhas Tarefas Diárias</h2>
                 <div class="axon-input-group">
                     <input type="text" id="input-tarefa" class="axon-input" placeholder="Ex: ir para igreja sabado">
-                    <button class="btn-send" onclick="registrarTarefa()">
+                    <button class="btn-enviar-axon" onclick="registrarTarefa()">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
                     </button>
                 </div>
                 <div id="lista-tarefas" class="mt-6"></div>
+            </div>
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Tarefas Concluídas</h2>
+                <div id="lista-tarefas-feitas"></div>
             </div>
         </section>
 
@@ -261,15 +277,19 @@
                 <div id="valor-cofre-total" class="valor-acumulado">R$ 0,00</div>
             </div>
             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> NOVO APORTE</h2>
+                <h2 class="titulo-lista"><span>●</span> NOVO APORTE NO COFRE</h2>
+                <div class="axon-input-group"><input type="text" id="cofre-valor" class="axon-input" placeholder="VALOR:"></div>
                 <div class="axon-input-group">
-                    <input type="text" id="cofre-valor" class="axon-input" placeholder="Valor:">
-                    <button class="btn-send" onclick="registrarNoCofre()">
+                    <input type="text" id="cofre-data" class="axon-input" placeholder="DATA:">
+                    <button class="btn-enviar-axon" onclick="registrarNoCofre()">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
                     </button>
                 </div>
             </div>
-            <div id="lista-cofre" class="space-y-3"></div>
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> HISTÓRICO DE CONSTRUÇÃO DE RIQUEZA</h2>
+                <div id="lista-cofre" class="space-y-3"></div>
+            </div>
         </section>
 
         <section id="aba-ideias" class="secao-conteudo">
@@ -277,8 +297,8 @@
                 <h2 class="titulo-lista"><span>●</span> Mural de Insights</h2>
                 <div class="axon-input-group">
                     <textarea id="input-ideia" class="axon-input h-32" placeholder="Escreva sua ideia..."></textarea>
-                    <button class="btn-send" onclick="registrarIdeia()">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
+                    <button class="btn-enviar-axon" onclick="registrarIdeia()">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z"/></svg>
                     </button>
                 </div>
                 <div id="mural-ideias" class="mt-6"></div>
@@ -315,23 +335,32 @@
             return valor || formatarDataHoje();
         }
 
-        function salvarTudo() { localStorage.setItem('axon_db', JSON.stringify(db_financeiro)); localStorage.setItem('axon_cofre', JSON.stringify(db_cofre)); localStorage.setItem('axon_pagamentos', JSON.stringify(db_pagamentos)); localStorage.setItem('axon_tarefas', JSON.stringify(db_tarefas)); localStorage.setItem('axon_ideias', JSON.stringify(db_ideias)); renderizar(); }
+        function formatarParaSoma(str) { if (typeof str !== 'string') str = String(str); return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0; }
 
-        // --- FUNÇÃO PARA ALTERAR STATUS AO CLICAR ---
-        function toggleStatus(banco, id) {
-            let db = (banco === 'fin') ? db_financeiro : db_pagamentos;
-            let item = db.find(x => x.id === id);
-            if(item) { item.status = (item.status === 'pago') ? 'pendente' : 'pago'; salvarTudo(); }
+        function salvarTudo() { 
+            localStorage.setItem('axon_db', JSON.stringify(db_financeiro)); 
+            localStorage.setItem('axon_cofre', JSON.stringify(db_cofre)); 
+            localStorage.setItem('axon_pagamentos', JSON.stringify(db_pagamentos)); 
+            localStorage.setItem('axon_tarefas', JSON.stringify(db_tarefas)); 
+            localStorage.setItem('axon_ideias', JSON.stringify(db_ideias)); 
+            renderizar(); 
         }
 
         function deletar(banco, id) {
-            if(!confirm("Excluir?")) return;
+            if(!confirm("Excluir permanentemente?")) return;
             if(banco === 'fin') db_financeiro = db_financeiro.filter(x => x.id !== id);
             if(banco === 'pag') db_pagamentos = db_pagamentos.filter(x => x.id !== id);
             if(banco === 'tar') db_tarefas = db_tarefas.filter(x => x.id !== id);
             if(banco === 'cof') db_cofre = db_cofre.filter(x => x.id !== id);
             if(banco === 'ide') db_ideias = db_ideias.filter(x => x.id !== id);
             salvarTudo();
+        }
+
+        // --- ALTERAR STATUS AO CLICAR NA BADGE ---
+        function toggleStatus(banco, id) {
+            let db = (banco === 'fin') ? db_financeiro : db_pagamentos;
+            let item = db.find(x => x.id === id);
+            if(item) { item.status = (item.status === 'pago') ? 'pendente' : 'pago'; salvarTudo(); }
         }
 
         function registrarDivida() {
@@ -346,12 +375,12 @@
 
         function registrarTarefa() {
             const t = document.getElementById('input-tarefa').value;
-            if(t) { db_tarefas.push({ id: Date.now(), nome: t, data: formatarDataHoje() }); document.getElementById('input-tarefa').value=''; salvarTudo(); }
+            if(t) { db_tarefas.push({ id: Date.now(), nome: t, data: formatarDataHoje(), status: 'pendente' }); document.getElementById('input-tarefa').value=''; salvarTudo(); }
         }
 
         function registrarNoCofre() {
-            const v = document.getElementById('cofre-valor').value;
-            if(v) { db_cofre.push({ id: Date.now(), valor: v, data: formatarDataHoje() }); document.getElementById('cofre-valor').value=''; salvarTudo(); }
+            const v = document.getElementById('cofre-valor').value, d = document.getElementById('cofre-data').value;
+            if(v) { db_cofre.push({ id: Date.now(), valor: v, data: tratarDataAxon(d) }); document.getElementById('cofre-valor').value=''; document.getElementById('cofre-data').value=''; salvarTudo(); }
         }
 
         function registrarIdeia() {
@@ -367,35 +396,43 @@
         }
 
         function renderizar() {
-            // Dashboard Recebimentos
+            // Recebimentos
             let sP = 0, sPa = 0, sA = 0;
             const listStatus = document.getElementById('lista-status'); listStatus.innerHTML = '';
             db_financeiro.forEach(i => {
-                const v = parseFloat(i.valor.replace('.','').replace(',','.')) || 0;
-                if(i.status === 'pago') sPa += v; else sP += v;
+                const v = formatarParaSoma(i.valor);
+                if(i.status === 'pago') sPa += v; else { sP += v; }
                 listStatus.innerHTML += `<div class="item-axon"><div>${i.nome}<br><small class="text-gray-500">${i.data}</small></div><div class="flex items-center gap-2"><b>R$ ${i.valor}</b><span class="badge badge-${i.status}" onclick="toggleStatus('fin', ${i.id})">${i.status}</span><span class="btn-lixeira" onclick="deletar('fin', ${i.id})">🗑️</span></div></div>`;
             });
-            document.getElementById('total-receber').innerText = `R$ ${sP.toLocaleString('pt-BR')}`;
-            document.getElementById('total-receb-pago').innerText = `R$ ${sPa.toLocaleString('pt-BR')}`;
+            document.getElementById('total-receber').innerText = `R$ ${sP.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-receb-pago').innerText = `R$ ${sPa.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
-            // Dashboard Pagamentos
+            // Pagamentos
             let pP = 0, pPa = 0;
-            const listPag = document.getElementById('lista-contas-pagar'); listPag.innerHTML = '';
+            const listPagStatus = document.getElementById('lista-status-pagamentos'); listPagStatus.innerHTML = '';
             db_pagamentos.forEach(i => {
-                const v = parseFloat(i.valor.replace('.','').replace(',','.')) || 0;
+                const v = formatarParaSoma(i.valor);
                 if(i.status === 'pago') pPa += v; else pP += v;
-                listPag.innerHTML += `<div class="item-axon"><div>${i.nome}<br><small class="text-gray-500">${i.data}</small></div><div class="flex items-center gap-2"><b>R$ ${i.valor}</b><span class="badge badge-${i.status}" onclick="toggleStatus('pag', ${i.id})">${i.status}</span><span class="btn-lixeira" onclick="deletar('pag', ${i.id})">🗑️</span></div></div>`;
+                listPagStatus.innerHTML += `<div class="item-axon"><div>${i.nome}<br><small class="text-gray-500">${i.data}</small></div><div class="flex items-center gap-2"><b>R$ ${i.valor}</b><span class="badge badge-${i.status}" onclick="toggleStatus('pag', ${i.id})">${i.status}</span><span class="btn-lixeira" onclick="deletar('pag', ${i.id})">🗑️</div></div>`;
             });
-            document.getElementById('total-pagar').innerText = `R$ ${pP.toLocaleString('pt-BR')}`;
+            document.getElementById('total-pagar').innerText = `R$ ${pP.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-pago-realizado').innerText = `R$ ${pPa.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
             // Tarefas
             const listT = document.getElementById('lista-tarefas'); listT.innerHTML = '';
-            db_tarefas.forEach(t => { listT.innerHTML += `<div class="item-axon"><div>${t.nome}</div><span class="btn-lixeira" onclick="deletar('tar', ${t.id})">🗑️</span></div>`; });
+            const listTF = document.getElementById('lista-tarefas-feitas'); listTF.innerHTML = '';
+            db_tarefas.forEach(t => { 
+                const html = `<div class="item-axon"><div>${t.nome}</div><span class="btn-lixeira" onclick="deletar('tar', ${t.id})">🗑️</span></div>`;
+                if(t.status === 'feita') listTF.innerHTML += html; else listT.innerHTML += html;
+            });
 
             // Cofre
             const listC = document.getElementById('lista-cofre'); listC.innerHTML = ''; let tC = 0;
-            db_cofre.slice().reverse().forEach(c => { tC += parseFloat(c.valor.replace(',','.')); listC.innerHTML += `<div class="item-axon"><div>Depósito - ${c.data}</div><div class="flex items-center gap-2"><b>R$ ${c.valor}</b><span class="btn-lixeira" onclick="deletar('cof', ${c.id})">🗑️</span></div></div>`; });
-            document.getElementById('valor-cofre-total').innerText = `R$ ${tC.toLocaleString('pt-BR')}`;
+            db_cofre.slice().reverse().forEach(c => { 
+                tC += formatarParaSoma(c.valor); 
+                listC.innerHTML += `<div class="item-axon"><div>Depósito<br><small>${c.data}</small></div><div class="flex items-center gap-2"><b>R$ ${c.valor}</b><span class="btn-lixeira" onclick="deletar('cof', ${c.id})">🗑️</span></div></div>`; 
+            });
+            document.getElementById('valor-cofre-total').innerText = `R$ ${tC.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
             // Ideias
             const listI = document.getElementById('mural-ideias'); listI.innerHTML = '';
@@ -403,15 +440,10 @@
         }
         renderizar();
 
-        // PWA Download
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+        // PWA logic
+        let dp; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); dp = e; });
         setTimeout(() => { document.getElementById('btn-download-axon').style.display = 'flex'; }, 5000);
-        document.getElementById('btn-download-axon').addEventListener('click', async () => {
-            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } 
-            else { alert("Acesse o menu do navegador e escolha 'Instalar App'."); }
-        });
-
+        document.getElementById('btn-download-axon').addEventListener('click', async () => { if (dp) { dp.prompt(); dp = null; } else { alert("Acesse o menu do navegador para 'Instalar App'."); } });
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
     </script>
 </body>
