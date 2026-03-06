@@ -14,9 +14,9 @@
     <link rel="apple-touch-icon" href="icon-192.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        /* --- IDENTIDADE VISUAL AXON --- */
         :root {
             --dourado: #d4af37;
             --preto-profundo: #050505;
@@ -54,6 +54,19 @@
             font-size: 2rem;
             letter-spacing: 12px;
             text-transform: uppercase;
+        }
+
+        /* Indicador de Salvamento */
+        #cloud-status {
+            position: fixed;
+            top: calc(80px + env(safe-area-inset-top));
+            right: 20px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #444;
+            z-index: 1001;
+            font-weight: bold;
         }
 
         .menu-abas {
@@ -114,7 +127,6 @@
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* --- BOTÃO DE ENVIO NAS CAIXAS --- */
         .axon-input-group {
             display: flex;
             gap: 8px;
@@ -139,28 +151,11 @@
         }
         .btn-enviar-axon:active { transform: scale(0.9); }
 
-        #btn-download-axon {
-            position: fixed; bottom: 30px; right: 20px;
-            background: var(--dourado); color: #000;
-            width: 65px; height: 65px; border-radius: 50%;
-            display: none; align-items: center; justify-content: center;
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
-            z-index: 9999; border: 3px solid #fff; animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-12px);} 60% {transform: translateY(-6px);} }
-
-        .secao-conteudo { display: none; animation: fadeIn 0.4s ease-out; }
-        .secao-conteudo.ativa { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .btn-axon { background: var(--dourado); color: #000; font-weight: bold; padding: 12px 20px; border-radius: 8px; font-size: 0.75rem; text-transform: uppercase; cursor: pointer; border: none; }
         .badge { font-size: 0.65rem; font-weight: 800; padding: 4px 10px; border-radius: 5px; text-transform: uppercase; cursor: pointer; }
         .badge-pendente { background: rgba(212, 175, 55, 0.1); color: var(--dourado); border: 1px solid var(--dourado); }
         .badge-pago { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
-        .badge-atrasado { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
 
-        .btn-lixeira { color: #444; cursor: pointer; font-size: 1.1rem; padding-left: 10px; transition: 0.3s; }
+        .btn-lixeira { color: #444; transition: 0.3s; cursor: pointer; font-size: 1.1rem; padding-left: 10px; }
         .btn-lixeira:hover { color: #ef4444; }
 
         .dash-cofre { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); border: 2px solid var(--dourado); padding: 40px 20px; text-align: center; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.1); }
@@ -170,19 +165,13 @@
         .header-ideia { background: #151515; padding: 8px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
         .corpo-ideia { padding: 15px; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #d1d5db; white-space: pre-wrap; }
 
-        @media (max-width: 768px) {
-            .grid-resumo { grid-template-columns: 1fr; }
-            .valor-acumulado { font-size: 2.2rem; }
-        }
+        @media (max-width: 768px) { .grid-resumo { grid-template-columns: 1fr; } .valor-acumulado { font-size: 2.2rem; } }
     </style>
 </head>
 <body>
 
     <header class="barra-topo"><div class="logo-axon">AXON</div></header>
-
-    <div id="btn-download-axon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="black" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
-    </div>
+    <div id="cloud-status">Sincronizado</div>
 
     <nav class="menu-abas">
         <button class="item-aba ativa" onclick="abrirAba('aba-recebimentos', this)">RECEBIMENTOS</button>
@@ -229,10 +218,10 @@
             <div class="grid-resumo">
                 <div class="resumo-card"><div class="resumo-label">Total a Pagar</div><div id="total-pagar" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
                 <div class="resumo-card"><div class="resumo-label">Total Pago</div><div id="total-pago-realizado" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
-                <div class="resumo-card"><div class="resumo-label">Boletos em Atraso</div><div id="total-pagar-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+                <div class="resumo-card"><div class="resumo-label">Atrasados</div><div id="total-pagar-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
             </div>
             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Minhas Contas a Pagar</h2>
+                <h2 class="titulo-lista"><span>●</span> Registrar Conta</h2>
                 <div class="axon-input-group"><input type="text" id="pag-nome" class="axon-input" placeholder="DESCRIÇÃO:"></div>
                 <div class="axon-input-group"><input type="text" id="pag-valor" class="axon-input" placeholder="VALOR:"></div>
                 <div class="axon-input-group">
@@ -243,10 +232,10 @@
                 </div>
             </div>
             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Controle de Status (Pagamentos)</h2>
+                <h2 class="titulo-lista"><span>●</span> Controle de Pagamentos</h2>
                 <div id="lista-status-pagamentos" class="mb-6"></div>
                 <div class="axon-input-group">
-                    <input type="text" id="input-update-pag" class="axon-input" placeholder="Ex: Paguei o Aluguel">
+                    <input type="text" id="input-update-pag" class="axon-input" placeholder="Comando rápido...">
                     <button class="btn-enviar-axon" onclick="processarComando('input-update-pag', db_pagamentos)">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
                     </button>
@@ -256,9 +245,9 @@
         
         <section id="aba-tarefas" class="secao-conteudo">
             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Minhas Tarefas Diárias</h2>
+                <h2 class="titulo-lista"><span>●</span> Minhas Tarefas</h2>
                 <div class="axon-input-group">
-                    <input type="text" id="input-tarefa" class="axon-input" placeholder="Ex: ir para igreja sabado">
+                    <input type="text" id="input-tarefa" class="axon-input" placeholder="O que precisa fazer?">
                     <button class="btn-enviar-axon" onclick="registrarTarefa()">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
                     </button>
@@ -277,10 +266,10 @@
                 <div id="valor-cofre-total" class="valor-acumulado">R$ 0,00</div>
             </div>
             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> NOVO APORTE NO COFRE</h2>
-                <div class="axon-input-group"><input type="text" id="cofre-valor" class="axon-input" placeholder="VALOR:"></div>
+                <h2 class="titulo-lista"><span>●</span> NOVO APORTE</h2>
+                <div class="axon-input-group"><input type="text" id="cofre-valor" class="axon-input" placeholder="Valor:"></div>
                 <div class="axon-input-group">
-                    <input type="text" id="cofre-data" class="axon-input" placeholder="DATA:">
+                    <input type="text" id="cofre-data" class="axon-input" placeholder="Data:">
                     <button class="btn-enviar-axon" onclick="registrarNoCofre()">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
                     </button>
@@ -307,13 +296,64 @@
     </main>
 
     <script>
-        function abrirAba(id, btn) { document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa')); document.querySelectorAll('.item-aba').forEach(b => b.classList.remove('ativa')); document.getElementById(id).classList.add('ativa'); btn.classList.add('ativa'); }
+        // --- CONFIGURAÇÃO SUPABASE ---
+        const SUPABASE_URL = 'https://zqvfnykxwlcozvawqgrn.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxdmZueWt4d2xjb3p2YXdxZ3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NDkzNDQsImV4cCI6MjA4NTMyNTM0NH0.CevpF9vP4748mb2vFNsOp5Kq6u7Nfp_100bJcW7ogUQ';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let db_financeiro = JSON.parse(localStorage.getItem('axon_db')) || [];
-        let db_cofre = JSON.parse(localStorage.getItem('axon_cofre')) || [];
-        let db_pagamentos = JSON.parse(localStorage.getItem('axon_pagamentos')) || [];
-        let db_tarefas = JSON.parse(localStorage.getItem('axon_tarefas')) || [];
-        let db_ideias = JSON.parse(localStorage.getItem('axon_ideias')) || [];
+        let user = null;
+        let db_financeiro = [], db_cofre = [], db_pagamentos = [], db_tarefas = [], db_ideias = [];
+
+        // Proteção de Rota
+        async function checkSession() {
+            const { data } = await supabase.auth.getUser();
+            if (!data.user) {
+                window.location.href = 'index.html';
+            } else {
+                user = data.user;
+                await carregarDados();
+            }
+        }
+        checkSession();
+
+        function abrirAba(id, btn) {
+            document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa'));
+            document.querySelectorAll('.item-aba').forEach(b => b.classList.remove('ativa'));
+            document.getElementById(id).classList.add('ativa');
+            btn.classList.add('ativa');
+        }
+
+        async function carregarDados() {
+            const { data, error } = await supabase.from('user_data').select('data').eq('id', user.id).single();
+            if (data) {
+                db_financeiro = data.data.db_financeiro || [];
+                db_cofre = data.data.db_cofre || [];
+                db_pagamentos = data.data.db_pagamentos || [];
+                db_tarefas = data.data.db_tarefas || [];
+                db_ideias = data.data.db_ideias || [];
+            }
+            renderizar();
+        }
+
+        async function salvarTudo() {
+            const statusEl = document.getElementById('cloud-status');
+            statusEl.innerText = "Salvando...";
+            statusEl.style.color = "var(--dourado)";
+
+            const { error } = await supabase.from('user_data').upsert({
+                id: user.id,
+                data: { db_financeiro, db_cofre, db_pagamentos, db_tarefas, db_ideias }
+            });
+
+            if (!error) {
+                statusEl.innerText = "Sincronizado";
+                statusEl.style.color = "#444";
+            } else {
+                statusEl.innerText = "Erro ao Salvar";
+                statusEl.style.color = "#ef4444";
+            }
+            renderizar();
+        }
 
         function formatarDataHoje() { const h = new Date(); return `${String(h.getDate()).padStart(2,'0')}/${String(h.getMonth()+1).padStart(2,'0')}/${h.getFullYear()}`; }
         
@@ -337,13 +377,10 @@
 
         function formatarParaSoma(str) { if (typeof str !== 'string') str = String(str); return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0; }
 
-        function salvarTudo() { 
-            localStorage.setItem('axon_db', JSON.stringify(db_financeiro)); 
-            localStorage.setItem('axon_cofre', JSON.stringify(db_cofre)); 
-            localStorage.setItem('axon_pagamentos', JSON.stringify(db_pagamentos)); 
-            localStorage.setItem('axon_tarefas', JSON.stringify(db_tarefas)); 
-            localStorage.setItem('axon_ideias', JSON.stringify(db_ideias)); 
-            renderizar(); 
+        function toggleStatus(banco, id) {
+            let db = (banco === 'fin') ? db_financeiro : db_pagamentos;
+            let item = db.find(x => x.id === id);
+            if(item) { item.status = (item.status === 'pago') ? 'pendente' : 'pago'; salvarTudo(); }
         }
 
         function deletar(banco, id) {
@@ -354,13 +391,6 @@
             if(banco === 'cof') db_cofre = db_cofre.filter(x => x.id !== id);
             if(banco === 'ide') db_ideias = db_ideias.filter(x => x.id !== id);
             salvarTudo();
-        }
-
-        // --- ALTERAR STATUS AO CLICAR NA BADGE ---
-        function toggleStatus(banco, id) {
-            let db = (banco === 'fin') ? db_financeiro : db_pagamentos;
-            let item = db.find(x => x.id === id);
-            if(item) { item.status = (item.status === 'pago') ? 'pendente' : 'pago'; salvarTudo(); }
         }
 
         function registrarDivida() {
@@ -396,7 +426,7 @@
         }
 
         function renderizar() {
-            // Recebimentos
+            // Dashboard e Listas
             let sP = 0, sPa = 0, sA = 0;
             const listStatus = document.getElementById('lista-status'); listStatus.innerHTML = '';
             db_financeiro.forEach(i => {
@@ -407,18 +437,16 @@
             document.getElementById('total-receber').innerText = `R$ ${sP.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             document.getElementById('total-receb-pago').innerText = `R$ ${sPa.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
-            // Pagamentos
-            let pP = 0, pPa = 0;
+            let pP = 0, pPa = 0, pA = 0;
             const listPagStatus = document.getElementById('lista-status-pagamentos'); listPagStatus.innerHTML = '';
             db_pagamentos.forEach(i => {
                 const v = formatarParaSoma(i.valor);
                 if(i.status === 'pago') pPa += v; else pP += v;
-                listPagStatus.innerHTML += `<div class="item-axon"><div>${i.nome}<br><small class="text-gray-500">${i.data}</small></div><div class="flex items-center gap-2"><b>R$ ${i.valor}</b><span class="badge badge-${i.status}" onclick="toggleStatus('pag', ${i.id})">${i.status}</span><span class="btn-lixeira" onclick="deletar('pag', ${i.id})">🗑️</div></div>`;
+                listPagStatus.innerHTML += `<div class="item-axon"><div>${i.nome}<br><small class="text-gray-500">${i.data}</small></div><div class="flex items-center gap-2"><b>R$ ${i.valor}</b><span class="badge badge-${i.status}" onclick="toggleStatus('pag', ${i.id})">${i.status}</span><span class="btn-lixeira" onclick="deletar('pag', ${i.id})">🗑️</span></div></div>`;
             });
             document.getElementById('total-pagar').innerText = `R$ ${pP.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             document.getElementById('total-pago-realizado').innerText = `R$ ${pPa.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
-            // Tarefas
             const listT = document.getElementById('lista-tarefas'); listT.innerHTML = '';
             const listTF = document.getElementById('lista-tarefas-feitas'); listTF.innerHTML = '';
             db_tarefas.forEach(t => { 
@@ -426,7 +454,6 @@
                 if(t.status === 'feita') listTF.innerHTML += html; else listT.innerHTML += html;
             });
 
-            // Cofre
             const listC = document.getElementById('lista-cofre'); listC.innerHTML = ''; let tC = 0;
             db_cofre.slice().reverse().forEach(c => { 
                 tC += formatarParaSoma(c.valor); 
@@ -434,17 +461,9 @@
             });
             document.getElementById('valor-cofre-total').innerText = `R$ ${tC.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
-            // Ideias
             const listI = document.getElementById('mural-ideias'); listI.innerHTML = '';
             db_ideias.slice().reverse().forEach(i => { listI.innerHTML += `<div class="balao-ideia"><div class="header-ideia"><span>LOG: ${i.data}</span><span class="btn-lixeira" onclick="deletar('ide', ${i.id})">🗑️</span></div><div class="corpo-ideia">${i.texto}</div></div>`; });
         }
-        renderizar();
-
-        // PWA logic
-        let dp; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); dp = e; });
-        setTimeout(() => { document.getElementById('btn-download-axon').style.display = 'flex'; }, 5000);
-        document.getElementById('btn-download-axon').addEventListener('click', async () => { if (dp) { dp.prompt(); dp = null; } else { alert("Acesse o menu do navegador para 'Instalar App'."); } });
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
     </script>
 </body>
 </html>
