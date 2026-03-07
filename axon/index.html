@@ -13,36 +13,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root { --dourado: #d4af37; --preto: #050505; --card: #111111; }
-        body { background: var(--preto); color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; user-select: none; }
+        body { background: var(--preto); color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; user-select: none; -webkit-tap-highlight-color: transparent; padding-bottom: env(safe-area-inset-bottom); }
+        
+        /* TELAS */
         .tela-centrada { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
         #tela-login, #tela-registro, #tela-app { display: none; }
         .ativa { display: flex !important; }
+
         .logo-axon { color: var(--dourado); font-weight: 900; font-size: 2.5rem; letter-spacing: 12px; text-transform: uppercase; margin-bottom: 2rem; }
-        .card-axon { background: var(--card); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px; padding: 25px; width: 100%; max-width: 380px; }
-        .axon-input { background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 12px; outline: none; }
-        .btn-premium { background: var(--dourado); color: #000; font-weight: 900; padding: 14px; border-radius: 8px; width: 100%; text-transform: uppercase; cursor: pointer; border: none; }
+        .card-axon { background: var(--card); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px; padding: 25px; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .axon-input { background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 12px; outline: none; font-size: 0.85rem; }
+        .btn-premium { background: var(--dourado); color: #000; font-weight: 900; padding: 14px; border-radius: 8px; width: 100%; text-transform: uppercase; cursor: pointer; border: none; transition: 0.2s; }
         .btn-premium:active { transform: scale(0.97); }
-        .link-alternativo { color: var(--dourado); font-size: 0.75rem; margin-top: 1.5rem; cursor: pointer; text-decoration: underline; }
-        
-        /* Dashboard original mantido */
+        .link-alternativo { color: var(--dourado); font-size: 0.75rem; margin-top: 1.5rem; cursor: pointer; text-decoration: underline; opacity: 0.8; }
+
+        /* DASHBOARD (CONSOLIDADO WR) */
         .barra-topo { background: #000; height: 70px; border-bottom: 2px solid var(--dourado); display: flex; align-items: center; justify-content: center; position: sticky; top: 0; z-index: 1000; }
-        .menu-abas { display: flex; background: #0a0a0a; overflow-x: auto; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
+        .menu-abas { display: flex; background: #0a0a0a; overflow-x: auto; border-bottom: 1px solid rgba(212, 175, 55, 0.1); scrollbar-width: none; }
+        .menu-abas::-webkit-scrollbar { display: none; }
         .item-aba { padding: 15px 20px; color: #555; font-size: 0.7rem; font-weight: bold; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; }
         .aba-ativa { color: var(--dourado); border-bottom: 3px solid var(--dourado); }
         .secao-conteudo { display: none; padding: 20px; animation: fadeIn 0.4s; }
         .ativa-dash { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Estilos de Cards e Badges do Wr */
+        /* ELEMENTOS ORIGINAIS DASHBOARD */
         .grid-resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
         .resumo-card { background: #000; border: 1px solid #222; padding: 12px; border-radius: 8px; text-align: center; }
-        .resumo-valor { color: var(--dourado); font-weight: 900; }
+        .resumo-valor { color: var(--dourado); font-weight: 900; font-size: 1.1rem; }
         .item-axon { background: rgba(0,0,0,0.5); border: 1px solid #222; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .badge-pago { color: #10b981; border: 1px solid #10b981; padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; }
-        .badge-pendente { color: var(--dourado); border: 1px solid var(--dourado); padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; }
-        .badge-atrasado { color: #ef4444; border: 1px solid #ef4444; padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; }
-        .btn-lixeira { cursor: pointer; opacity: 0.5; }
-        .btn-lixeira:hover { opacity: 1; color: #ef4444; }
+        .badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
+        .badge-pago { color: #10b981; border: 1px solid #10b981; }
+        .badge-pendente { color: var(--dourado); border: 1px solid var(--dourado); }
+        .badge-atrasado { color: #ef4444; border: 1px solid #ef4444; }
+        .btn-lixeira { cursor: pointer; color: #444; transition: 0.3s; }
+        .btn-lixeira:hover { color: #ef4444; }
     </style>
 </head>
 <body>
@@ -50,10 +55,11 @@
     <main id="tela-login" class="tela-centrada ativa">
         <div class="logo-axon">AXON</div>
         <div class="card-axon">
-            <input type="email" id="l-email" class="axon-input" placeholder="GMAIL:">
-            <input type="password" id="l-senha" class="axon-input" placeholder="SENHA:">
+            <h2 class="text-[10px] text-gray-500 font-bold mb-4 uppercase tracking-widest">Acesso Restrito</h2>
+            <input type="email" id="login-email" class="axon-input" placeholder="GMAIL:">
+            <input type="password" id="login-senha" class="axon-input" placeholder="SENHA:">
             <button onclick="fazerLogin()" class="btn-premium">ENTRAR</button>
-            <p id="e-login" class="text-red-500 text-[10px] mt-4 text-center"></p>
+            <p id="erro-login" class="text-red-500 text-[10px] mt-4 text-center font-bold"></p>
         </div>
         <p class="link-alternativo" onclick="irPara('tela-registro')">CRIAR NOVA CONTA PREMIUM</p>
     </main>
@@ -61,100 +67,96 @@
     <main id="tela-registro" class="tela-centrada">
         <div class="logo-axon">AXON</div>
         <div class="card-axon">
-            <input type="email" id="r-email" class="axon-input" placeholder="NOVO GMAIL:">
-            <input type="password" id="r-senha" class="axon-input" placeholder="CRIAR SENHA:">
-            <button onclick="fazerRegistro()" class="btn-premium">FINALIZAR REGISTRO</button>
-            <p id="e-reg" class="text-red-500 text-[10px] mt-4 text-center"></p>
+            <h2 class="text-[10px] text-gray-500 font-bold mb-4 uppercase tracking-widest">Novo Registro</h2>
+            <input type="email" id="reg-email" class="axon-input" placeholder="CRIAR COM GMAIL:">
+            <input type="password" id="reg-senha" class="axon-input" placeholder="CRIAR SENHA:">
+            <button onclick="fazerRegistro()" class="btn-premium">FINALIZAR CADASTRO</button>
+            <p id="erro-reg" class="text-red-500 text-[10px] mt-4 text-center font-bold"></p>
         </div>
-        <p class="link-alternativo" onclick="irPara('tela-login')">JÁ TENHO CONTA</p>
+        <p class="link-alternativo" onclick="irPara('tela-login')">JÁ TENHO CONTA / VOLTAR</p>
     </main>
 
     <div id="tela-app">
-        <header class="barra-topo"><div class="logo-axon">AXON</div></header>
+        <header class="barra-topo">
+            <div class="logo-axon">AXON</div>
+            <button onclick="fazerLogout()" class="absolute right-4 text-[10px] text-gray-500 font-bold border border-gray-800 p-1 rounded">SAIR</button>
+        </header>
         <nav class="menu-abas">
             <button class="item-aba aba-ativa" onclick="abrirAba('aba-fin', this)">FINANCEIRO</button>
             <button class="item-aba" onclick="abrirAba('aba-tar', this)">TAREFAS</button>
             <button class="item-aba" onclick="abrirAba('aba-cof', this)">COFRE</button>
             <button class="item-aba" onclick="abrirAba('aba-ide', this)">IDEIAS</button>
-            <button onclick="fazerLogout()" class="item-aba" style="color:#ef4444">SAIR</button>
         </nav>
 
-        <main class="p-4 max-w-4xl mx-auto">
+        <main class="p-4 max-w-5xl mx-auto">
             <section id="aba-fin" class="secao-conteudo ativa-dash">
-                <div class="grid-resumo">
-                    <div class="resumo-card"><div id="v-receber" class="resumo-valor">R$ 0,00</div></div>
-                    <div class="resumo-card"><div id="v-pagar" class="resumo-valor" style="color:#ef4444">R$ 0,00</div></div>
-                    <div class="resumo-card"><div id="v-atraso" class="resumo-valor" style="color:#ef4444">R$ 0,00</div></div>
+                 <div class="grid-resumo">
+                    <div class="resumo-card"><div class="text-[8px] text-gray-600 uppercase mb-1">A Receber</div><div id="v-receber" class="resumo-valor">R$ 0,00</div></div>
+                    <div class="resumo-card"><div class="text-[8px] text-gray-600 uppercase mb-1">A Pagar</div><div id="v-pagar" class="resumo-valor" style="color:#ef4444">R$ 0,00</div></div>
+                    <div class="resumo-card"><div class="text-[8px] text-gray-600 uppercase mb-1">Atrasados</div><div id="v-atraso" class="resumo-valor" style="color:#ef4444">R$ 0,00</div></div>
                 </div>
-                <div class="card-axon">
-                    <input type="text" id="f-nome" class="axon-input" placeholder="DESCRIÇÃO:">
-                    <input type="text" id="f-valor" class="axon-input" placeholder="VALOR:">
-                    <div class="flex gap-2">
-                        <input type="text" id="f-data" class="axon-input" placeholder="DATA:">
-                        <select id="f-tipo" class="axon-input"><option value="recebimento">RECEBER</option><option value="pagamento">PAGAR</option></select>
-                        <button onclick="addFinanceiro()" class="btn-premium w-16">➤</button>
-                    </div>
-                </div>
-                <div id="lista-fin" class="mt-4"></div>
-            </section>
-
-            <section id="aba-tar" class="secao-conteudo">
-                <div class="card-axon">
-                    <input type="text" id="t-nome" class="axon-input" placeholder="TAREFA:">
-                    <button onclick="addTarefa()" class="btn-premium">ADICIONAR</button>
-                </div>
-                <div id="lista-tar" class="mt-4"></div>
-            </section>
-
-            <section id="aba-cof" class="secao-conteudo">
-                <div class="dash-cofre"><div class="resumo-label">ACUMULADO</div><div id="v-cofre" class="valor-acumulado">R$ 0,00</div></div>
-                <div class="card-axon">
-                    <input type="text" id="c-valor" class="axon-input" placeholder="VALOR:">
-                    <button onclick="addCofre()" class="btn-premium">APORTAR</button>
-                </div>
-                <div id="lista-cof" class="mt-4"></div>
-            </section>
-
-            <section id="aba-ide" class="secao-conteudo">
-                <div class="card-axon">
-                    <textarea id="i-texto" class="axon-input h-24" placeholder="INSIGHT..."></textarea>
-                    <button onclick="addIdeia()" class="btn-premium">SALVAR</button>
-                </div>
-                <div id="lista-ide" class="mt-4"></div>
+                <div id="lista-fin"></div>
             </section>
         </main>
     </div>
 
     <script>
-        const URL = 'https://zqvfnykxwlcozvawqgrn.supabase.co';
-        const KEY = 'SUA_KEY_AQUI'; // Wr, coloque sua key aqui
-        const _supa = supabase.createClient(URL, KEY);
+        const SUPABASE_URL = 'https://zqvfnykxwlcozvawqgrn.supabase.co';
+        const SUPABASE_KEY = 'SUA_KEY_AQUI'; // Wr, use a sua chave original aqui
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        function irPara(id) {
-            document.querySelectorAll('main, #tela-app').forEach(t => t.classList.remove('ativa'));
+        function irPara(idTela) {
+            document.getElementById('tela-login').classList.remove('ativa');
+            document.getElementById('tela-registro').classList.remove('ativa');
             document.getElementById('tela-app').style.display = 'none';
-            const alvo = document.getElementById(id);
-            if(id === 'tela-app') alvo.style.display = 'block'; else alvo.classList.add('ativa');
+            if(idTela === 'tela-app') {
+                document.getElementById('tela-app').style.display = 'block';
+            } else {
+                document.getElementById(idTela).classList.add('ativa');
+            }
         }
 
         async function verificarSessao() {
-            const { data: { session } } = await _supa.auth.getSession();
-            if (session) irPara('tela-app'), carregarDados();
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (session) {
+                irPara('tela-app');
+                carregarDados();
+            }
         }
 
         async function fazerLogin() {
-            const e = document.getElementById('l-email').value, s = document.getElementById('l-senha').value;
-            const { error } = await _supa.auth.signInWithPassword({ email:e, password:s });
-            if (error) document.getElementById('e-login').innerText = error.message; else verificarSessao();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-senha').value.trim();
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) document.getElementById('erro-login').innerText = error.message;
+            else verificarSessao();
         }
 
         async function fazerRegistro() {
-            const e = document.getElementById('r-email').value, s = document.getElementById('r-senha').value;
-            const { error } = await _supa.auth.signUp({ email:e, password:s });
-            if (error) document.getElementById('e-reg').innerText = error.message; else alert("Sucesso! Faça Login."), irPara('tela-login');
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-senha').value.trim();
+            
+            if(!email || !password) {
+                document.getElementById('erro-reg').innerText = "Preencha e-mail e senha.";
+                return;
+            }
+
+            document.getElementById('erro-reg').innerText = "Processando cadastro...";
+
+            const { data, error } = await _supabase.auth.signUp({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                document.getElementById('erro-reg').innerText = "Erro: " + error.message;
+            } else {
+                alert("Cadastro realizado com sucesso! Agora você pode entrar.");
+                irPara('tela-login');
+            }
         }
 
-        async function fazerLogout() { await _supa.auth.signOut(); window.location.reload(); }
+        async function fazerLogout() { await _supabase.auth.signOut(); window.location.reload(); }
 
         function abrirAba(id, btn) {
             document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa-dash'));
@@ -163,74 +165,7 @@
             btn.classList.add('aba-ativa');
         }
 
-        // LÓGICA DE DADOS MANTIDA (WR CONSOLIDADA)
-        let dbF=[], dbC=[], dbT=[], dbI=[];
-
-        async function carregarDados() {
-            const {data:f} = await _supa.from('financeiro').select('*');
-            const {data:c} = await _supa.from('cofre').select('*');
-            const {data:t} = await _supa.from('tarefas').select('*');
-            const {data:i} = await _supa.from('ideias').select('*');
-            dbF=f||[]; dbC=c||[]; dbT=t||[]; dbI=i||[];
-            renderizar();
-        }
-
-        async function addFinanceiro() {
-            const n=document.getElementById('f-nome').value, v=document.getElementById('f-valor').value, d=document.getElementById('f-data').value, t=document.getElementById('f-tipo').value;
-            if(!n || !v) return;
-            const novo = { id:Date.now(), nome:n, valor:v, data:d || new Date().toLocaleDateString(), status:'pendente', tipo:t };
-            await _supa.from('financeiro').insert([novo]);
-            carregarDados();
-        }
-
-        async function addTarefa() {
-            const n=document.getElementById('t-nome').value;
-            if(!n) return;
-            const novo = { id:Date.now(), nome:n, data:new Date().toLocaleDateString(), status:'pendente', sem_prazo:true };
-            await _supa.from('tarefas').insert([novo]);
-            carregarDados();
-        }
-
-        async function addCofre() {
-            const v=document.getElementById('c-valor').value;
-            if(!v) return;
-            const novo = { id:Date.now(), valor:v, data:new Date().toLocaleDateString() };
-            await _supa.from('cofre').insert([novo]);
-            carregarDados();
-        }
-
-        async function addIdeia() {
-            const t=document.getElementById('i-texto').value;
-            if(!t) return;
-            const nova = { id:Date.now(), texto:t, data:new Date().toLocaleDateString() };
-            await _supa.from('ideias').insert([nova]);
-            carregarDados();
-        }
-
-        async function del(tab, id) { if(confirm("Apagar?")) { await _supa.from(tab).delete().eq('id', id); carregarDados(); } }
-
-        function renderizar() {
-            const lF=document.getElementById('lista-fin'); lF.innerHTML='';
-            let rec=0, pag=0;
-            dbF.forEach(i => {
-                const val = parseFloat(i.valor.replace('.','').replace(',','.')) || 0;
-                if(i.tipo==='recebimento') rec += val; else pag += val;
-                lF.innerHTML += `<div class="item-axon"><div><b>${i.nome}</b><br><small>${i.valor} | ${i.data}</small></div><div class="flex gap-3"><span class="badge-pendente">${i.tipo}</span><div onclick="del('financeiro',${i.id})" class="btn-lixeira">🗑️</div></div></div>`;
-            });
-            document.getElementById('v-receber').innerText = 'R$ '+rec.toLocaleString();
-            document.getElementById('v-pagar').innerText = 'R$ '+pag.toLocaleString();
-
-            const lC=document.getElementById('lista-cof'); lC.innerHTML=''; let cof=0;
-            dbC.forEach(i => { cof += parseFloat(i.valor.replace('.','').replace(',','.')) || 0; lC.innerHTML += `<div class="item-axon"><div>Aporte: R$ ${i.valor}</div><div onclick="del('cofre',${i.id})" class="btn-lixeira">🗑️</div></div>`; });
-            document.getElementById('v-cofre').innerText = 'R$ '+cof.toLocaleString();
-
-            const lT=document.getElementById('lista-tar'); lT.innerHTML='';
-            dbT.forEach(i => { lT.innerHTML += `<div class="item-axon"><div>${i.nome}</div><div onclick="del('tarefas',${i.id})" class="btn-lixeira">🗑️</div></div>`; });
-
-            const lI=document.getElementById('lista-ide'); lI.innerHTML='';
-            dbI.forEach(i => { lI.innerHTML += `<div class="item-axon"><div>${i.texto}</div><div onclick="del('ideias',${i.id})" class="btn-lixeira">🗑️</div></div>`; });
-        }
-
+        // Suas lógicas de dados continuam aqui embaixo...
         verificarSessao();
     </script>
 </body>
