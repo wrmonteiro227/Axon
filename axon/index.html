@@ -10,7 +10,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         /* --- IDENTIDADE VISUAL AXON --- */
@@ -51,18 +50,6 @@
             font-size: 2rem;
             letter-spacing: 12px;
             text-transform: uppercase;
-        }
-
-        #cloud-status {
-            position: fixed;
-            top: calc(80px + env(safe-area-inset-top));
-            right: 20px;
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #444;
-            z-index: 1001;
-            font-weight: bold;
         }
 
         .menu-abas {
@@ -125,8 +112,10 @@
             border-radius: 10px;
             margin-bottom: 12px;
             display: flex; justify-content: space-between; align-items: center;
+            transition: 0.3s;
         }
 
+        /* --- ESTILO DOS INPUTS COM BOTÃO --- */
         .axon-input-group {
             display: flex;
             gap: 8px;
@@ -157,11 +146,13 @@
         .badge-pago { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
         .badge-atrasado { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
 
-        .btn-lixeira { color: #444; transition: 0.3s; cursor: pointer; font-size: 1.1rem; padding-left: 10px; }
+        .btn-lixeira { color: #444; transition: 0.3s; cursor: pointer; font-size: 1.1rem; }
         .btn-lixeira:hover { color: #ef4444; }
 
+        .btn-axon { background: var(--dourado); color: #000; font-weight: bold; padding: 12px 20px; border-radius: 8px; font-size: 0.75rem; text-transform: uppercase; cursor: pointer; border: none; }
+
         .dash-cofre { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); border: 2px solid var(--dourado); padding: 40px 20px; text-align: center; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.1); }
-        .valor-acumulado { font-size: 3.5rem; font-weight: 900; color: var(--dourado); text-shadow: 0 0 25px rgba(212, 175, 55, 0.4); }
+        .valor-acumulado { font-size: 3.5rem; font-weight: 900; color: var(--dourado); text-shadow: 0 0 25px rgba(212, 175, 55, 0.4); letter-spacing: -1px; }
 
         .balao-ideia { background: #0d0d0d; border: 1px solid #222; border-left: 4px solid var(--dourado); border-radius: 8px; margin-bottom: 20px; }
         .header-ideia { background: #151515; padding: 8px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
@@ -173,7 +164,6 @@
 <body>
 
     <header class="barra-topo"><div class="logo-axon">AXON</div></header>
-    <div id="cloud-status">Carregando...</div>
 
     <nav class="menu-abas">
         <button class="item-aba ativa" onclick="abrirAba('aba-recebimentos', this)">RECEBIMENTOS</button>
@@ -184,7 +174,7 @@
     </nav>
 
     <main class="p-4 md:p-8 max-w-5xl mx-auto">
-        
+
         <section id="aba-recebimentos" class="secao-conteudo ativa">
             <div class="grid-resumo">
                 <div class="resumo-card"><div class="resumo-label">A Receber</div><div id="total-receber" class="resumo-valor">R$ 0,00</div></div>
@@ -208,7 +198,7 @@
                 <h2 class="titulo-lista"><span>●</span> Controle de Status</h2>
                 <div id="lista-status" class="mb-6"></div>
                 <div class="axon-input-group">
-                    <input type="text" id="input-update" class="axon-input" placeholder="Comando rápido...">
+                    <input type="text" id="input-update" class="axon-input" placeholder="Comando rápido (Ex: Raphael me pagou)">
                     <button class="btn-send" onclick="processarComandoRapido('input-update', db_financeiro)">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
                     </button>
@@ -220,10 +210,10 @@
             <div class="grid-resumo">
                 <div class="resumo-card"><div class="resumo-label">Total a Pagar</div><div id="total-pagar" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
                 <div class="resumo-card"><div class="resumo-label">Total Pago</div><div id="total-pago-realizado" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
-                <div class="resumo-card"><div class="resumo-label">Em Atraso</div><div id="total-pagar-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+                <div class="resumo-card"><div class="resumo-label">Boletos em Atraso</div><div id="total-pagar-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
             </div>
             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Registrar Conta</h2>
+                <h2 class="titulo-lista"><span>●</span> Minhas Contas a Pagar</h2>
                 <div class="axon-input-group"><input type="text" id="pag-nome" class="axon-input" placeholder="DESCRIÇÃO:"></div>
                 <div class="axon-input-group"><input type="text" id="pag-valor" class="axon-input" placeholder="VALOR:"></div>
                 <div class="axon-input-group">
@@ -234,17 +224,17 @@
                 </div>
             </div>
             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Status de Pagamentos</h2>
+                <h2 class="titulo-lista"><span>●</span> Controle de Status (Pagamentos)</h2>
                 <div id="lista-status-pagamentos" class="mb-6"></div>
                 <div class="axon-input-group">
-                    <input type="text" id="input-update-pag" class="axon-input" placeholder="Comando rápido...">
+                    <input type="text" id="input-update-pag" class="axon-input" placeholder="Ex: Paguei o Aluguel">
                     <button class="btn-send" onclick="processarComandoRapido('input-update-pag', db_pagamentos)">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
                     </button>
                 </div>
             </div>
         </section>
-        
+
         <section id="aba-tarefas" class="secao-conteudo">
             <div class="card-axon">
                 <h2 class="titulo-lista"><span>●</span> Minhas Tarefas Diárias</h2>
@@ -269,7 +259,7 @@
             </div>
             <div class="card-axon">
                 <h2 class="titulo-lista"><span>●</span> NOVO APORTE NO COFRE</h2>
-                <div class="axon-input-group"><input type="text" id="cofre-valor" class="axon-input" placeholder="VALOR:"></div>
+                <div class="axon-input-group"><input type="text" id="cofre-valor" class="axon-input" placeholder="VALOR PARA GUARDAR:"></div>
                 <div class="axon-input-group">
                     <input type="text" id="cofre-data" class="axon-input" placeholder="DATA:">
                     <button class="btn-send" onclick="registrarNoCofre()">
@@ -278,7 +268,7 @@
                 </div>
             </div>
             <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> HISTÓRICO DE RIQUEZA</h2>
+                <h2 class="titulo-lista"><span>●</span> HISTÓRICO DE CONSTRUÇÃO DE RIQUEZA</h2>
                 <div id="lista-cofre" class="space-y-3"></div>
             </div>
         </section>
@@ -287,169 +277,171 @@
             <div class="card-axon">
                 <h2 class="titulo-lista"><span>●</span> Mural de Insights</h2>
                 <div class="axon-input-group">
-                    <textarea id="input-ideia" class="axon-input h-32" placeholder="Escreva sua ideia..."></textarea>
+                    <textarea id="input-ideia" class="axon-input h-32" placeholder="Escreva sua ideia ou insight aqui..."></textarea>
                     <button class="btn-send" onclick="registrarIdeia()">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z"/></svg>
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
                     </button>
                 </div>
                 <div id="mural-ideias" class="mt-6"></div>
             </div>
         </section>
+
     </main>
 
     <script>
-        // --- CONFIGURAÇÃO SUPABASE ---
-        const SUPABASE_URL = 'https://zqvfnykxwlcozvawqgrn.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxdmZueWt4d2xjb3p2YXdxZ3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NDkzNDQsImV4cCI6MjA4NTMyNTM0NH0.CevpF9vP4748mb2vFNsOp5Kq6u7Nfp_100bJcW7ogUQ';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        let user = null;
-        let db_financeiro = [], db_cofre = [], db_pagamentos = [], db_tarefas = [], db_ideias = [];
-
-        async function checkSession() {
-            const { data } = await supabase.auth.getUser();
-            if (!data.user) window.location.href = 'index.html';
-            else { user = data.user; await carregarDados(); }
-        }
-        checkSession();
-
-        async function carregarDados() {
-            const { data, error } = await supabase.from('user_data').select('data').eq('id', user.id).single();
-            if (data) {
-                db_financeiro = data.data.db_financeiro || [];
-                db_cofre = data.data.db_cofre || [];
-                db_pagamentos = data.data.db_pagamentos || [];
-                db_tarefas = data.data.db_tarefas || [];
-                db_ideias = data.data.db_ideias || [];
-            }
-            renderizar();
+        function abrirAba(idAba, botao) {
+            document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa'));
+            document.querySelectorAll('.item-aba').forEach(b => b.classList.remove('ativa'));
+            document.getElementById(idAba).classList.add('ativa');
+            botao.classList.add('ativa');
         }
 
-        async function salvarTudo() {
-            const stEl = document.getElementById('cloud-status');
-            stEl.innerText = "Salvando..."; stEl.style.color = "var(--dourado)";
-            const { error } = await supabase.from('user_data').upsert({
-                id: user.id,
-                data: { db_financeiro, db_cofre, db_pagamentos, db_tarefas, db_ideias }
-            });
-            if (!error) { stEl.innerText = "Sincronizado"; stEl.style.color = "#444"; }
-            renderizar();
-        }
+        // --- BANCO DE DADOS ---
+        let db_financeiro = JSON.parse(localStorage.getItem('axon_db')) || [];
+        let db_cofre = JSON.parse(localStorage.getItem('axon_cofre')) || [];
+        let db_pagamentos = JSON.parse(localStorage.getItem('axon_pagamentos')) || [];
+        let db_tarefas = JSON.parse(localStorage.getItem('axon_tarefas')) || [];
+        let db_ideias = JSON.parse(localStorage.getItem('axon_ideias')) || [];
 
-        function abrirAba(id, btn) { document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa')); document.querySelectorAll('.item-aba').forEach(b => b.classList.remove('ativa')); document.getElementById(id).classList.add('ativa'); btn.classList.add('ativa'); }
+        function formatarDataHoje() { const hoje = new Date(); return `${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')}/${hoje.getFullYear()}`; }
 
-        function formatarDataHoje() { const h = new Date(); return `${String(h.getDate()).padStart(2,'0')}/${String(h.getMonth()+1).padStart(2,'0')}/${h.getFullYear()}`; }
-        
         function tratarDataAxon(valor) {
             let txt = valor.toLowerCase().trim();
             if (!txt) return formatarDataHoje();
             const hoje = new Date();
+            const anoAtual = hoje.getFullYear();
             const diasSemana = { 'domingo': 0, 'segunda': 1, 'terça': 2, 'terca': 2, 'quarta': 3, 'quinta': 4, 'sexta': 5, 'sábado': 6, 'sabado': 6 };
             if (diasSemana[txt] !== undefined) {
-                let dR = new Date(); let diff = (diasSemana[txt] + 7 - hoje.getDay()) % 7;
-                if (diff === 0) diff = 7; dR.setDate(hoje.getDate() + diff);
-                return `${String(dR.getDate()).padStart(2, '0')}/${String(dR.getMonth() + 1).padStart(2, '0')}/${dR.getFullYear()}`;
+                let dataResult = new Date();
+                let diff = (diasSemana[txt] + 7 - hoje.getDay()) % 7;
+                if (diff === 0) diff = 7;
+                dataResult.setDate(hoje.getDate() + diff);
+                return `${String(dataResult.getDate()).padStart(2, '0')}/${String(dataResult.getMonth() + 1).padStart(2, '0')}/${dataResult.getFullYear()}`;
             }
             let apenasNumeros = txt.replace(/\D/g, "");
-            if (apenasNumeros.length === 4) return apenasNumeros.substring(0, 2) + "/" + apenasNumeros.substring(2, 4) + "/" + hoje.getFullYear();
+            if (apenasNumeros.length === 4) return apenasNumeros.substring(0, 2) + "/" + apenasNumeros.substring(2, 4) + "/" + anoAtual;
             if (apenasNumeros.length === 8) return apenasNumeros.substring(0, 2) + "/" + apenasNumeros.substring(2, 4) + "/" + apenasNumeros.substring(4, 8);
             return valor || formatarDataHoje();
         }
 
-        function formatarParaSoma(str) { if (typeof str !== 'string') str = String(str); return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0; }
-
-        function toggleStatus(banco, id) {
-            let db = (banco === 'fin') ? db_financeiro : db_pagamentos;
-            let item = db.find(x => x.id === id);
-            if(item) { item.status = (item.status === 'pago') ? 'pendente' : 'pago'; salvarTudo(); }
+        function salvarTudo() {
+            const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+            const verificar = (lista) => {
+                lista.forEach(item => {
+                    if (item.status === 'pago' || item.status === 'feita' || item.semPrazo) return;
+                    const p = item.data.split('/'); const venc = new Date(p[2], p[1] - 1, p[0]);
+                    if (venc < hoje) { item.status = 'atrasado'; item.motivoAtraso = `Atrasado ${Math.ceil(Math.abs(hoje - venc) / (1000 * 60 * 60 * 24))} dias`; }
+                });
+            };
+            verificar(db_financeiro); verificar(db_pagamentos); verificar(db_tarefas);
+            localStorage.setItem('axon_db', JSON.stringify(db_financeiro));
+            localStorage.setItem('axon_cofre', JSON.stringify(db_cofre));
+            localStorage.setItem('axon_pagamentos', JSON.stringify(db_pagamentos));
+            localStorage.setItem('axon_tarefas', JSON.stringify(db_tarefas));
+            localStorage.setItem('axon_ideias', JSON.stringify(db_ideias));
+            renderizar();
         }
 
-        function deletar(banco, id) {
-            if(!confirm("Excluir permanentemente?")) return;
-            if(banco === 'fin') db_financeiro = db_financeiro.filter(x => x.id !== id);
-            if(banco === 'pag') db_pagamentos = db_pagamentos.filter(x => x.id !== id);
-            if(banco === 'tar') db_tarefas = db_tarefas.filter(x => x.id !== id);
-            if(banco === 'cof') db_cofre = db_cofre.filter(x => x.id !== id);
-            if(banco === 'ide') db_ideias = db_ideias.filter(x => x.id !== id);
+        function formatarParaSoma(str) { if (typeof str !== 'string') str = String(str); return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0; }
+
+        // --- FUNÇÃO PARA ALTERAR STATUS AO CLICAR (NOVO) ---
+        function toggleStatus(bancoNome, id) {
+            let db = (bancoNome === 'db_financeiro') ? db_financeiro : db_pagamentos;
+            let item = db.find(x => x.id === id);
+            if (item) {
+                item.status = (item.status === 'pago') ? 'pendente' : 'pago';
+                salvarTudo();
+            }
+        }
+
+        function deletarItem(bancoNome, id) {
+            if (!confirm("Excluir item permanentemente?")) return;
+            if (bancoNome === 'db_financeiro') db_financeiro = db_financeiro.filter(i => i.id !== id);
+            if (bancoNome === 'db_pagamentos') db_pagamentos = db_pagamentos.filter(i => i.id !== id);
+            if (bancoNome === 'db_cofre') db_cofre = db_cofre.filter(i => i.id !== id);
+            if (bancoNome === 'db_tarefas') db_tarefas = db_tarefas.filter(i => i.id !== id);
+            if (bancoNome === 'db_ideias') db_ideias = db_ideias.filter(i => i.id !== id);
             salvarTudo();
         }
 
         function registrarDivida() {
-            const n = document.getElementById('reg-nome').value, v = document.getElementById('reg-valor').value, d = document.getElementById('reg-data').value;
-            if(n && v) { db_financeiro.push({ id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente' }); document.getElementById('reg-nome').value=''; document.getElementById('reg-valor').value=''; document.getElementById('reg-data').value=''; salvarTudo(); }
+            const n = document.getElementById('reg-nome').value.trim(), v = document.getElementById('reg-valor').value.trim(), d = document.getElementById('reg-data').value.trim();
+            if (n && v) { db_financeiro.push({ id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente', motivoAtraso: '' }); salvarTudo(); ['reg-nome', 'reg-valor', 'reg-data'].forEach(i => document.getElementById(i).value = ''); }
         }
 
         function registrarPagamento() {
-            const n = document.getElementById('pag-nome').value, v = document.getElementById('pag-valor').value, d = document.getElementById('pag-data').value;
-            if(n && v) { db_pagamentos.push({ id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente' }); document.getElementById('pag-nome').value=''; document.getElementById('pag-valor').value=''; document.getElementById('pag-data').value=''; salvarTudo(); }
+            const n = document.getElementById('pag-nome').value.trim(), v = document.getElementById('pag-valor').value.trim(), d = document.getElementById('pag-data').value.trim();
+            if (n && v) { db_pagamentos.push({ id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente', motivoAtraso: '' }); salvarTudo(); ['pag-nome', 'pag-valor', 'pag-data'].forEach(i => document.getElementById(i).value = ''); }
         }
 
-        function registrarTarefa() {
-            const t = document.getElementById('input-tarefa').value;
-            if(t) { db_tarefas.push({ id: Date.now(), nome: t, data: formatarDataHoje(), status: 'pendente' }); document.getElementById('input-tarefa').value=''; salvarTudo(); }
+        function registrarTarefaBotao() {
+            const el = document.getElementById('input-tarefa'); const texto = el.value.trim();
+            if (!texto) return;
+            const regex = /(.+?)\s+(\d{4}|\d{8}|segunda|terça|terca|quarta|quinta|sexta|sábado|sabado|domingo)$/i;
+            const match = texto.match(regex);
+            if (match) db_tarefas.push({ id: Date.now(), nome: match[1].trim(), data: tratarDataAxon(match[2]), status: 'pendente', semPrazo: false });
+            else db_tarefas.push({ id: Date.now(), nome: texto, data: formatarDataHoje(), status: 'pendente', semPrazo: true });
+            el.value = ''; salvarTudo();
         }
 
         function registrarNoCofre() {
-            const v = document.getElementById('cofre-valor').value, d = document.getElementById('cofre-data').value;
-            if(v) { db_cofre.push({ id: Date.now(), valor: v, data: tratarDataAxon(d) }); document.getElementById('cofre-valor').value=''; document.getElementById('cofre-data').value=''; salvarTudo(); }
+            const v = document.getElementById('cofre-valor').value.trim(), d = document.getElementById('cofre-data').value.trim();
+            if (v) { db_cofre.push({ id: Date.now(), valor: v, data: tratarDataAxon(d) }); salvarTudo(); ['cofre-valor', 'cofre-data'].forEach(i => document.getElementById(i).value = ''); }
         }
 
         function registrarIdeia() {
-            const t = document.getElementById('input-ideia').value;
-            if(t) { db_ideias.push({ id: Date.now(), texto: t, data: formatarDataHoje() }); document.getElementById('input-ideia').value=''; salvarTudo(); }
+            const texto = document.getElementById('input-ideia').value.trim();
+            if (texto) { db_ideias.push({ id: Date.now(), texto: texto, data: formatarDataHoje() }); document.getElementById('input-ideia').value = ''; salvarTudo(); }
         }
 
         function processarComandoRapido(inputId, db) {
-            const el = document.getElementById(inputId); const cmd = el.value.toLowerCase().trim();
-            if (!cmd) return;
-            const p1 = cmd.match(/(.+?)\s+(?:me\s+)?pagou/i) || cmd.match(/paguei\s+(?:o\s+)?(.+)/i);
-            if(p1) { let nome = p1[1].trim(); let item = db.find(x => x.nome.toLowerCase().includes(nome) && x.status !== 'pago'); if(item) item.status = 'pago'; }
+            const el = document.getElementById(inputId); const comando = el.value.toLowerCase().trim();
+            if (!comando) return;
+            const p1 = comando.match(/(.+?)\s+(?:me\s+)?pagou\s*([\d.]+)?/i);
+            const p2 = comando.match(/(?:me\s+)?pagou\s+(?:o\s+|a\s+)?(.+?)\s*([\d.]+)?$/i);
+            const p3 = comando.match(/(.+?)\s+(?:paguei|pago)\s*([\d.]+)?/i);
+            const p4 = comando.match(/(?:paguei|pago)\s+(?:o\s+|a\s+)?(.+?)\s*([\d.]+)?$/i);
+            let nome = ""; const m = p1 || p2 || p3 || p4; if (m) { nome = (m[1] || m[2]).trim(); }
+            if (nome) { const alvo = db.find(r => r.nome.toLowerCase().includes(nome) && r.status !== 'pago'); if (alvo) alvo.status = 'pago'; }
             el.value = ''; salvarTudo();
         }
 
         function renderizar() {
-            // Recebimentos
-            let sP = 0, sPa = 0, sA = 0;
-            const listStatus = document.getElementById('lista-status'); listStatus.innerHTML = '';
-            db_financeiro.forEach(i => {
-                const v = formatarParaSoma(i.valor);
-                if(i.status === 'pago') sPa += v; else sP += v;
-                listStatus.innerHTML += `<div class="item-axon"><div><div class="font-bold text-white">${i.nome}</div><div class="text-[10px] text-gray-400">R$ ${i.valor} | ${i.data}</div></div><div class="flex items-center gap-3"><span class="badge badge-${i.status}" onclick="toggleStatus('fin', ${i.id})">${i.status}</span><div class="btn-lixeira" onclick="deletar('fin', ${i.id})">🗑️</div></div></div>`;
-            });
-            document.getElementById('total-receber').innerText = `R$ ${sP.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            document.getElementById('total-receb-pago').innerText = `R$ ${sPa.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            const renderFinanceiro = (db, statusId, DashIds, bancoNome) => {
+                const list = document.getElementById(statusId); if (!list) return;
+                list.innerHTML = ''; let sP = 0, sPa = 0, sA = 0;
+                db.forEach(item => {
+                    const v = formatarParaSoma(item.valor || "0");
+                    if (item.status === 'pago') sPa += v; else { sP += v; if (item.status === 'atrasado') sA += v; }
+                    let sC = item.status === 'pago' ? 'badge-pago' : (item.status === 'atrasado' ? 'badge-atrasado' : 'badge-pendente');
+                    list.innerHTML += `<div class="item-axon"><div><div class="font-bold text-white">${item.nome}</div><div class="text-[10px] text-gray-400">R$ ${item.valor} | Vencimento: ${item.data}</div></div><div class="flex items-center gap-3"><span class="badge ${sC}" onclick="toggleStatus('${bancoNome}', ${item.id})">${item.status === 'pago' ? 'Pago' : (item.status === 'atrasado' ? item.motivoAtraso : 'Pendente')}</span><div class="btn-lixeira" onclick="deletarItem('${bancoNome}', ${item.id})">🗑️</div></div></div>`;
+                });
+                document.getElementById(DashIds[0]).innerText = `R$ ${sP.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                document.getElementById(DashIds[1]).innerText = `R$ ${sPa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                if(DashIds[2]) document.getElementById(DashIds[2]).innerText = `R$ ${sA.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            };
 
-            // Pagamentos
-            let pP = 0, pPa = 0, pA = 0;
-            const listPagStatus = document.getElementById('lista-status-pagamentos'); listPagStatus.innerHTML = '';
-            db_pagamentos.forEach(i => {
-                const v = formatarParaSoma(i.valor);
-                if(i.status === 'pago') pPa += v; else pP += v;
-                listPagStatus.innerHTML += `<div class="item-axon"><div><div class="font-bold text-white">${i.nome}</div><div class="text-[10px] text-gray-400">R$ ${i.valor} | ${i.data}</div></div><div class="flex items-center gap-3"><span class="badge badge-${i.status}" onclick="toggleStatus('pag', ${i.id})">${i.status}</span><div class="btn-lixeira" onclick="deletar('pag', ${i.id})">🗑️</div></div></div>`;
-            });
-            document.getElementById('total-pagar').innerText = `R$ ${pP.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            document.getElementById('total-pago-realizado').innerText = `R$ ${pPa.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            const renderTarefas = () => {
+                const lT = document.getElementById('lista-tarefas'), lTF = document.getElementById('lista-tarefas-feitas');
+                lT.innerHTML = ''; lTF.innerHTML = '';
+                db_tarefas.forEach(item => {
+                    const html = `<div class="item-axon"><div><div class="font-bold text-white">${item.nome}</div><div class="text-[10px] text-gray-500">${item.semPrazo ? 'Salva em' : 'Vencimento'}: ${item.data}</div></div><div class="flex items-center gap-3"><span class="badge ${item.status === 'feita' ? 'badge-pago' : (item.status === 'atrasado' ? 'badge-atrasado' : 'badge-pendente')}" onclick="const a = db_tarefas.find(t=>t.id===${item.id}); a.status=(a.status==='feita'?'pendente':'feita'); salvarTudo();">${item.status==='feita'?'Feito':'Fazer'}</span><div class="btn-lixeira" onclick="deletarItem('db_tarefas', ${item.id})">🗑️</div></div></div>`;
+                    if (item.status === 'feita') lTF.innerHTML += html; else lT.innerHTML += html;
+                });
+            };
 
-            // Tarefas
-            const listT = document.getElementById('lista-tarefas'); listT.innerHTML = '';
-            const listTF = document.getElementById('lista-tarefas-feitas'); listTF.innerHTML = '';
-            db_tarefas.forEach(t => { 
-                const html = `<div class="item-axon"><div>${t.nome}</div><div class="btn-lixeira" onclick="deletar('tar', ${t.id})">🗑️</div></div>`;
-                if(t.status === 'feita') listTF.innerHTML += html; else listT.innerHTML += html;
-            });
+            renderFinanceiro(db_financeiro, 'lista-status', ['total-receber', 'total-receb-pago', 'total-receb-atraso'], 'db_financeiro');
+            renderFinanceiro(db_pagamentos, 'lista-status-pagamentos', ['total-pagar', 'total-pago-realizado', 'total-pagar-atraso'], 'db_pagamentos');
+            renderTarefas();
 
-            // Cofre
-            const listC = document.getElementById('lista-cofre'); listC.innerHTML = ''; let tC = 0;
-            db_cofre.slice().reverse().forEach(c => { 
-                tC += formatarParaSoma(c.valor); 
-                listC.innerHTML += `<div class="item-axon"><div>Depósito<br><small>${c.data}</small></div><div class="flex items-center gap-3"><div class="font-black text-white">R$ ${c.valor}</div><div class="btn-lixeira" onclick="deletar('cof', ${c.id})">🗑️</div></div></div>`; 
-            });
-            document.getElementById('valor-cofre-total').innerText = `R$ ${tC.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            const lC = document.getElementById('lista-cofre'); lC.innerHTML = ''; let sCof = 0;
+            db_cofre.slice().reverse().forEach(i => { sCof += formatarParaSoma(i.valor); lC.innerHTML += `<div class="item-axon" style="border-left: 4px solid #fff;"><div><div class="font-bold text-white">Depósito</div><div class="text-[10px] text-gray-500">Data: ${i.data}</div></div><div class="flex items-center gap-3"><div class="font-black text-white">R$ ${i.valor}</div><div class="btn-lixeira" onclick="deletarItem('db_cofre', ${i.id})">🗑️</div></div></div>`; });
+            document.getElementById('valor-cofre-total').innerText = `R$ ${sCof.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
-            // Ideias
-            const listI = document.getElementById('mural-ideias'); listI.innerHTML = '';
-            db_ideias.slice().reverse().forEach(i => { listI.innerHTML += `<div class="balao-ideia"><div class="header-ideia"><span>LOG: ${i.data}</span><span class="btn-lixeira" onclick="deletar('ide', ${i.id})">🗑️</span></div><div class="corpo-ideia">${i.texto}</div></div>`; });
+            const mural = document.getElementById('mural-ideias'); mural.innerHTML = '';
+            db_ideias.slice().reverse().forEach(i => { mural.innerHTML += `<div class="balao-ideia"><div class="header-ideia"><span style="font-size: 0.6rem; color: #666;">LOG: ${i.data}</span><div class="btn-lixeira" onclick="deletarItem('db_ideias', ${i.id})">🗑️</div></div><div class="corpo-ideia">${i.texto}</div></div>`; });
         }
+        renderizar();
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
     </script>
