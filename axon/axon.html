@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AXON - Gestão Premium</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d4af37">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AXON">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* --- IDENTIDADE VISUAL AXON --- */
+        :root {
+            --dourado: #d4af37;
+            --preto-profundo: #050505;
+            --cinza-card: #111111;
+            --cinza-hover: #1a1a1a;
+        }
+
+        html {
+            background-color: #000;
+        }
+
+        body {
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: env(safe-area-inset-bottom);
+            position: relative;
+            background: transparent;
+        }
+
+            /* --- CAMADA DE IMAGEM DE FUNDO (ASSETS/FUNDO.PNG) --- */
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('assets/fundo.png');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                opacity: 0.05; /* Baixa opacidade para não atrapalhar */
+                z-index: -1;
+            }
+
+        .barra-topo {
+            background-color: #000;
+            height: calc(70px + env(safe-area-inset-top));
+            padding-top: env(safe-area-inset-top);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 2px solid var(--dourado);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-axon {
+            color: var(--dourado);
+            font-weight: 900;
+            font-size: 2rem;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+        }
+
+        .menu-abas {
+            display: flex;
+            justify-content: flex-start;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+            .menu-abas::-webkit-scrollbar {
+                display: none;
+            }
+
+        .item-aba {
+            padding: 15px 20px;
+            color: #555;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            background: none;
+            border: none;
+        }
+
+            .item-aba.ativa {
+                color: var(--dourado);
+                border-bottom: 3px solid var(--dourado);
+            }
+
+        .grid-resumo {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .resumo-card {
+            background: #000;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .resumo-label {
+            color: #666;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .resumo-valor {
+            color: var(--dourado);
+            font-weight: 900;
+            font-size: 1.1rem;
+        }
+
+        .card-axon {
+            background: rgba(17, 17, 17, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .titulo-lista {
+            color: var(--dourado);
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-axon {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #222;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- INPUTS COM BOTÃO --- */
+        .axon-input-group {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .axon-input {
+            background: #000;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.85rem;
+            flex-grow: 1;
+        }
+
+        .btn-send {
+            background: var(--dourado);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            width: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+            .btn-send:active {
+                transform: scale(0.9);
+            }
+
+        .badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 5px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .badge-pendente {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--dourado);
+            border: 1px solid var(--dourado);
+        }
+
+        .badge-pago {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .badge-atrasado {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .btn-lixeira {
+            color: #444;
+            transition: 0.3s;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+            .btn-lixeira:hover {
+                color: #ef4444;
+            }
+
+        .dash-cofre {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            border: 2px solid var(--dourado);
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+        }
+
+        .valor-acumulado {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--dourado);
+            text-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .balao-ideia {
+            background: #0d0d0d;
+            border: 1px solid #222;
+            border-left: 4px solid var(--dourado);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .header-ideia {
+            background: #151515;
+            padding: 8px 15px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .corpo-ideia {
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #d1d5db;
+            white-space: pre-wrap;
+        }
+
+        @media (max-width: 768px) {
+            .grid-resumo {
+                grid-template-columns: 1fr;
+            }
+
+            .valor-acumulado {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="barra-topo"><div class="logo-axon">AXON</div></header>
+
+    <nav class="menu-abas">
+        <button class="item-aba ativa" onclick="abrirAba('aba-recebimentos', this)">RECEBIMENTOS</button>
+        <button class="item-aba" onclick="abrirAba('aba-pagamentos', this)">PAGAMENTOS</button>
+        <button class="item-aba" onclick="abrirAba('aba-tarefas', this)">TAREFAS</button>
+        <button class="item-aba" onclick="abrirAba('aba-cofre', this)">COFRE</button>
+        <button class="item-aba" onclick="abrirAba('aba-ideias', this)">IDEIAS</button>
+    </nav>
+
+    <main class="p-4 md:p-8 max-w-5xl mx-auto">
+
+        <section id="aba-recebimentos" class="secao-conteudo ativa">
+            <div class="grid-resumo">
+                <div class="resumo-card"><div class="resumo-label">A Receber</div><div id="total-receber" class="resumo-valor">R$ 0,00</div></div>
+                <div class="resumo-card"><div class="resumo-label">Total Recebido</div><div id="total-receb-pago" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
+                <div class="resumo-card"><div class="resumo-label">Em Atraso</div><div id="total-receb-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+            </div>
+
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Registrar Devedor</h2>
+                <div class="axon-input-group"><input type="text" id="reg-nome" class="axon-input" placeholder="DEVEDOR:"></div>
+                <div class="axon-input-group"><input type="text" id="reg-valor" class="axon-input" placeholder="VALOR:"></div>
+                <div class="axon-input-group">
+                    <input type="text" id="reg-data" class="axon-input" placeholder="DATA:">
+                    <button class="btn-send" onclick="registrarDivida()">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z" /></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Controle de Status</h2>
+                <div id="lista-status" class="mb-6"></div>
+                <div class="axon-input-group">
+                    <input type="text" id="input-update" class="axon-input" placeholder="Comando rápido...">
+                    <button class="btn-send" onclick="processarComandoRapido('input-update', db_financeiro)">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" /></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="aba-pagamentos" class="secao-conteudo">
+            <div class="grid-resumo">
+                <div class="resumo-card"><div class="resumo-label">Total a Pagar</div><div id="total-pagar" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+                <div class="resumo-card"><div class="resumo-label">Total Pago</div><div id="total-pago-realizado" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
+                <div class="resumo-card"><div class="resumo-label">Boletos em Atraso</div><div id="total-pagar-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+            </div>
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Minhas Contas a Pagar</h2>
+                <div class="axon-input-group"><input type="text" id="pag-nome" class="axon-input" placeholder="DESCRIÇÃO:"></div>
+                <div class="axon-input-group"><input type="text" id="pag-valor" class="axon-input" placeholder="VALOR:"></div>
+                <div class="axon-input-group">
+                    <input type="text" id="pag-data" class="axon-input" placeholder="DATA:">
+                    <button class="btn-send" onclick="registrarPagamento()">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z" /></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Controle de Status (Pagamentos)</h2>
+                <div id="lista-status-pagamentos" class="mb-6"></div>
+                <div class="axon-input-group">
+                    <input type="text" id="input-update-pag" class="axon-input" placeholder="Ex: Paguei o Aluguel">
+                    <button class="btn-send" onclick="processarComandoRapido('input-update-pag', db_pagamentos)">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" /></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="aba-tarefas" class="secao-conteudo">
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Minhas Tarefas Diárias</h2>
+                <div class="axon-input-group">
+                    <input type="text" id="input-tarefa" class="axon-input" placeholder="Ex: ir para igreja sabado">
+                    <button class="btn-send" onclick="registrarTarefaBotao()">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" /><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" /></svg>
+                    </button>
+                </div>
+                <div id="lista-tarefas" class="mt-6"></div>
+            </div>
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Tarefas Concluídas</h2>
+                <div id="lista-tarefas-feitas"></div>
+            </div>
+        </section>
+
+        <section id="aba-cofre" class="secao-conteudo">
+            <div class="dash-cofre">
+                <div class="resumo-label" style="font-size: 0.8rem; margin-bottom: 10px;">PATRIMÔNIO ACUMULADO</div>
+                <div id="valor-cofre-total" class="valor-acumulado">R$ 0,00</div>
+            </div>
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> NOVO APORTE NO COFRE</h2>
+                <div class="axon-input-group"><input type="text" id="cofre-valor" class="axon-input" placeholder="VALOR:"></div>
+                <div class="axon-input-group">
+                    <input type="text" id="cofre-data" class="axon-input" placeholder="DATA:">
+                    <button class="btn-send" onclick="registrarNoCofre()">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" /><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" /></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> HISTÓRICO DE CONSTRUÇÃO DE RIQUEZA</h2>
+                <div id="lista-cofre" class="space-y-3"></div>
+            </div>
+        </section>
+
+        <section id="aba-ideias" class="secao-conteudo">
+            <div class="card-axon">
+                <h2 class="titulo-lista"><span>●</span> Mural de Insights</h2>
+                <div class="axon-input-group">
+                    <textarea id="input-ideia" class="axon-input h-32" placeholder="Escreva sua ideia ou insight aqui..."></textarea>
+                    <button class="btn-send" onclick="registrarIdeia()">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" /></svg>
+                    </button>
+                </div>
+                <div id="mural-ideias" class="mt-6"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function abrirAba(idAba, botao) {
+            document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa'));
+            document.querySelectorAll('.item-aba').forEach(b => b.classList.remove('ativa'));
+            document.getElementById(idAba).classList.add('ativa');
+            botao.classList.add('ativa');
+        }
+
+        let db_financeiro = JSON.parse(localStorage.getItem('axon_db')) || [];
+        let db_cofre = JSON.parse(localStorage.getItem('axon_cofre')) || [];
+        let db_pagamentos = JSON.parse(localStorage.getItem('axon_pagamentos')) || [];
+        let db_tarefas = JSON.parse(localStorage.getItem('axon_tarefas')) || [];
+        let db_ideias = JSON.parse(localStorage.getItem('axon_ideias')) || [];
+
+        function formatarDataHoje() { const hoje = new Date(); return `${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')}/${hoje.getFullYear()}`; }
+
+        function tratarDataAxon(valor) {
+            let txt = valor.toLowerCase().trim();
+            if (!txt) return formatarDataHoje();
+            const hoje = new Date();
+            const diasSemana = { 'domingo': 0, 'segunda': 1, 'terça': 2, 'terca': 2, 'quarta': 3, 'quinta': 4, 'sexta': 5, 'sábado': 6, 'sabado': 6 };
+            if (diasSemana[txt] !== undefined) {
+                let dR = new Date(); let diff = (diasSemana[txt] + 7 - hoje.getDay()) % 7;
+                if (diff === 0) diff = 7; dR.setDate(hoje.getDate() + diff);
+                return `${String(dR.getDate()).padStart(2, '0')}/${String(dR.getMonth() + 1).padStart(2, '0')}/${dR.getFullYear()}`;
+            }
+            let apenasNumeros = txt.replace(/\D/g, "");
+            if (apenasNumeros.length === 4) return apenasNumeros.substring(0, 2) + "/" + apenasNumeros.substring(2, 4) + "/" + hoje.getFullYear();
+            if (apenasNumeros.length === 8) return apenasNumeros.substring(0, 2) + "/" + apenasNumeros.substring(2, 4) + "/" + apenasNumeros.substring(4, 8);
+            return valor || formatarDataHoje();
+        }
+
+        function salvarTudo() {
+            const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+            const verificar = (lista) => {
+                lista.forEach(item => {
+                    if (item.status === 'pago' || item.status === 'feita' || item.semPrazo) return;
+                    const p = item.data.split('/'); const venc = new Date(p[2], p[1] - 1, p[0]);
+                    if (venc < hoje) { item.status = 'atrasado'; item.motivoAtraso = `Atrasado ${Math.ceil(Math.abs(hoje - venc) / (1000 * 60 * 60 * 24))} dias`; }
+                });
+            };
+            verificar(db_financeiro); verificar(db_pagamentos); verificar(db_tarefas);
+            localStorage.setItem('axon_db', JSON.stringify(db_financeiro));
+            localStorage.setItem('axon_cofre', JSON.stringify(db_cofre));
+            localStorage.setItem('axon_pagamentos', JSON.stringify(db_pagamentos));
+            localStorage.setItem('axon_tarefas', JSON.stringify(db_tarefas));
+            localStorage.setItem('axon_ideias', JSON.stringify(db_ideias));
+            renderizar();
+        }
+
+        function formatarParaSoma(str) { if (typeof str !== 'string') str = String(str); return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0; }
+
+        function toggleStatus(bancoNome, id) {
+            let db = (bancoNome === 'db_financeiro') ? db_financeiro : db_pagamentos;
+            let item = db.find(x => x.id === id);
+            if (item) { item.status = (item.status === 'pago') ? 'pendente' : 'pago'; salvarTudo(); }
+        }
+
+        function deletarItem(bancoNome, id) {
+            if (!confirm("Excluir item permanentemente?")) return;
+            if (bancoNome === 'db_financeiro') db_financeiro = db_financeiro.filter(i => i.id !== id);
+            if (bancoNome === 'db_pagamentos') db_pagamentos = db_pagamentos.filter(i => i.id !== id);
+            if (bancoNome === 'db_cofre') db_cofre = db_cofre.filter(i => i.id !== id);
+            if (bancoNome === 'db_tarefas') db_tarefas = db_tarefas.filter(i => i.id !== id);
+            if (bancoNome === 'db_ideias') db_ideias = db_ideias.filter(i => i.id !== id);
+            salvarTudo();
+        }
+
+        function registrarDivida() {
+            const n = document.getElementById('reg-nome').value.trim(), v = document.getElementById('reg-valor').value.trim(), d = document.getElementById('reg-data').value.trim();
+            if (n && v) { db_financeiro.push({ id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente', motivoAtraso: '' }); salvarTudo();['reg-nome', 'reg-valor', 'reg-data'].forEach(i => document.getElementById(i).value = ''); }
+        }
+
+        function registrarPagamento() {
+            const n = document.getElementById('pag-nome').value.trim(), v = document.getElementById('pag-valor').value.trim(), d = document.getElementById('pag-data').value.trim();
+            if (n && v) { db_pagamentos.push({ id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente', motivoAtraso: '' }); salvarTudo();['pag-nome', 'pag-valor', 'pag-data'].forEach(i => document.getElementById(i).value = ''); }
+        }
+
+        function registrarTarefaBotao() {
+            const el = document.getElementById('input-tarefa'); const texto = el.value.trim();
+            if (!texto) return;
+            const regex = /(.+?)\s+(\d{4}|\d{8}|segunda|terça|terca|quarta|quinta|sexta|sábado|sabado|domingo)$/i;
+            const match = texto.match(regex);
+            if (match) db_tarefas.push({ id: Date.now(), nome: match[1].trim(), data: tratarDataAxon(match[2]), status: 'pendente', semPrazo: false });
+            else db_tarefas.push({ id: Date.now(), nome: texto, data: formatarDataHoje(), status: 'pendente', semPrazo: true });
+            el.value = ''; salvarTudo();
+        }
+
+        function registrarNoCofre() {
+            const v = document.getElementById('cofre-valor').value.trim(), d = document.getElementById('cofre-data').value.trim();
+            if (v) { db_cofre.push({ id: Date.now(), valor: v, data: tratarDataAxon(d) }); salvarTudo();['cofre-valor', 'cofre-data'].forEach(i => document.getElementById(i).value = ''); }
+        }
+
+        function registrarIdeia() {
+            const texto = document.getElementById('input-ideia').value.trim();
+            if (texto) { db_ideias.push({ id: Date.now(), texto: texto, data: formatarDataHoje() }); document.getElementById('input-ideia').value = ''; salvarTudo(); }
+        }
+
+        function processarComandoRapido(inputId, db) {
+            const el = document.getElementById(inputId); const comando = el.value.toLowerCase().trim();
+            if (!comando) return;
+            const p1 = comando.match(/(.+?)\s+(?:me\s+)?pagou\s*([\d.]+)?/i);
+            const p2 = comando.match(/(?:me\s+)?pagou\s+(?:o\s+|a\s+)?(.+?)\s*([\d.]+)?$/i);
+            const p3 = comando.match(/(.+?)\s+(?:paguei|pago)\s*([\d.]+)?/i);
+            const p4 = comando.match(/(?:paguei|pago)\s+(?:o\s+|a\s+)?(.+?)\s*([\d.]+)?$/i);
+            let nome = ""; const m = p1 || p2 || p3 || p4; if (m) { nome = (m[1] || m[2]).trim(); }
+            if (nome) { const alvo = db.find(r => r.nome.toLowerCase().includes(nome) && r.status !== 'pago'); if (alvo) alvo.status = 'pago'; }
+            el.value = ''; salvarTudo();
+        }
+
+        function renderizar() {
+            const renderFinanceiro = (db, statusId, DashIds, bancoNome) => {
+                const list = document.getElementById(statusId); if (!list) return;
+                list.innerHTML = ''; let sP = 0, sPa = 0, sA = 0;
+                db.forEach(item => {
+                    const v = formatarParaSoma(item.valor || "0");
+                    if (item.status === 'pago') sPa += v; else { sP += v; if (item.status === 'atrasado') sA += v; }
+                    let sC = item.status === 'pago' ? 'badge-pago' : (item.status === 'atrasado' ? 'badge-atrasado' : 'badge-pendente');
+                    list.innerHTML += `<div class="item-axon"><div><div class="font-bold text-white">${item.nome}</div><div class="text-[10px] text-gray-400">R$ ${item.valor} | Vencimento: ${item.data}</div></div><div class="flex items-center gap-3"><span class="badge ${sC}" onclick="toggleStatus('${bancoNome}', ${item.id})">${item.status === 'pago' ? 'Pago' : (item.status === 'atrasado' ? item.motivoAtraso : 'Pendente')}</span><div class="btn-lixeira" onclick="deletarItem('${bancoNome}', ${item.id})">🗑️</div></div></div>`;
+                });
+                document.getElementById(DashIds[0]).innerText = `R$ ${sP.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                document.getElementById(DashIds[1]).innerText = `R$ ${sPa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                if (DashIds[2]) document.getElementById(DashIds[2]).innerText = `R$ ${sA.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            };
+
+            const renderTarefas = () => {
+                const lT = document.getElementById('lista-tarefas'), lTF = document.getElementById('lista-tarefas-feitas');
+                lT.innerHTML = ''; lTF.innerHTML = '';
+                db_tarefas.forEach(item => {
+                    const html = `<div class="item-axon"><div><div class="font-bold text-white">${item.nome}</div><div class="text-[10px] text-gray-500">${item.semPrazo ? 'Salva em' : 'Vencimento'}: ${item.data}</div></div><div class="flex items-center gap-3"><span class="badge ${item.status === 'feita' ? 'badge-pago' : (item.status === 'atrasado' ? 'badge-atrasado' : 'badge-pendente')}" onclick="const a = db_tarefas.find(t=>t.id===${item.id}); a.status=(a.status==='feita'?'pendente':'feita'); salvarTudo();">${item.status === 'feita' ? 'Feito' : 'Fazer'}</span><div class="btn-lixeira" onclick="deletarItem('db_tarefas', ${item.id})">🗑️</div></div></div>`;
+                    if (item.status === 'feita') lTF.innerHTML += html; else lT.innerHTML += html;
+                });
+            };
+
+            renderFinanceiro(db_financeiro, 'lista-status', ['total-receber', 'total-receb-pago', 'total-receb-atraso'], 'db_financeiro');
+            renderFinanceiro(db_pagamentos, 'lista-status-pagamentos', ['total-pagar', 'total-pago-realizado', 'total-pagar-atraso'], 'db_pagamentos');
+            renderTarefas();
+
+            const lC = document.getElementById('lista-cofre'); lC.innerHTML = ''; let sCof = 0;
+            db_cofre.slice().reverse().forEach(i => { sCof += formatarParaSoma(i.valor); lC.innerHTML += `<div class="item-axon" style="border-left: 4px solid #fff;"><div><div class="font-bold text-white">Depósito</div><div class="text-[10px] text-gray-500">Data: ${i.data}</div></div><div class="flex items-center gap-3"><div class="font-black text-white">R$ ${i.valor}</div><div class="btn-lixeira" onclick="deletarItem('db_cofre', ${i.id})">🗑️</div></div></div>`; });
+            document.getElementById('valor-cofre-total').innerText = `R$ ${sCof.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+
+            const mural = document.getElementById('mural-ideias'); mural.innerHTML = '';
+            db_ideias.slice().reverse().forEach(i => { mural.innerHTML += `<div class="balao-ideia"><div class="header-ideia"><span style="font-size: 0.6rem; color: #666;">LOG: ${i.data}</span><div class="btn-lixeira" onclick="deletarItem('db_ideias', ${i.id})">🗑️</div></div><div class="corpo-ideia">${i.texto}</div></div>`; });
+        }
+        renderizar();
+
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
+    </script>
+</body>
+</html>
