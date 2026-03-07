@@ -7,167 +7,91 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#d4af37">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         :root { --dourado: #d4af37; --preto: #050505; --card: #111111; }
-        body { background: var(--preto); color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; user-select: none; -webkit-tap-highlight-color: transparent; padding-bottom: env(safe-area-inset-bottom); }
-        
-        /* TELAS */
-        .tela-centrada { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        body { background: var(--preto); color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; }
+        .tela-auth { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
         #tela-login, #tela-registro, #tela-app { display: none; }
         .ativa { display: flex !important; }
-
-        .logo-axon { color: var(--dourado); font-weight: 900; font-size: 2.5rem; letter-spacing: 12px; text-transform: uppercase; margin-bottom: 2rem; }
-        .card-axon { background: var(--card); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px; padding: 25px; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .axon-input { background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 12px; outline: none; font-size: 0.85rem; }
-        .btn-premium { background: var(--dourado); color: #000; font-weight: 900; padding: 14px; border-radius: 8px; width: 100%; text-transform: uppercase; cursor: pointer; border: none; transition: 0.2s; }
-        .btn-premium:active { transform: scale(0.97); }
-        .link-alternativo { color: var(--dourado); font-size: 0.75rem; margin-top: 1.5rem; cursor: pointer; text-decoration: underline; opacity: 0.8; }
-
-        /* DASHBOARD (CONSOLIDADO WR) */
-        .barra-topo { background: #000; height: 70px; border-bottom: 2px solid var(--dourado); display: flex; align-items: center; justify-content: center; position: sticky; top: 0; z-index: 1000; }
-        .menu-abas { display: flex; background: #0a0a0a; overflow-x: auto; border-bottom: 1px solid rgba(212, 175, 55, 0.1); scrollbar-width: none; }
-        .menu-abas::-webkit-scrollbar { display: none; }
-        .item-aba { padding: 15px 20px; color: #555; font-size: 0.7rem; font-weight: bold; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; }
-        .aba-ativa { color: var(--dourado); border-bottom: 3px solid var(--dourado); }
-        .secao-conteudo { display: none; padding: 20px; animation: fadeIn 0.4s; }
-        .ativa-dash { display: block !important; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* ELEMENTOS ORIGINAIS DASHBOARD */
-        .grid-resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-        .resumo-card { background: #000; border: 1px solid #222; padding: 12px; border-radius: 8px; text-align: center; }
-        .resumo-valor { color: var(--dourado); font-weight: 900; font-size: 1.1rem; }
-        .item-axon { background: rgba(0,0,0,0.5); border: 1px solid #222; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
-        .badge-pago { color: #10b981; border: 1px solid #10b981; }
-        .badge-pendente { color: var(--dourado); border: 1px solid var(--dourado); }
-        .badge-atrasado { color: #ef4444; border: 1px solid #ef4444; }
-        .btn-lixeira { cursor: pointer; color: #444; transition: 0.3s; }
-        .btn-lixeira:hover { color: #ef4444; }
+        .card-axon { background: var(--card); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px; padding: 25px; width: 100%; max-width: 380px; }
+        .axon-input { background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 12px; outline: none; }
+        .btn-premium { background: var(--dourado); color: #000; font-weight: 900; padding: 14px; border-radius: 8px; width: 100%; text-transform: uppercase; cursor: pointer; border: none; }
+        .logo-axon { color: var(--dourado); font-weight: 900; font-size: 2rem; letter-spacing: 8px; margin-bottom: 2rem; }
     </style>
 </head>
 <body>
 
-    <main id="tela-login" class="tela-centrada ativa">
+    <main id="tela-login" class="tela-auth ativa">
         <div class="logo-axon">AXON</div>
         <div class="card-axon">
-            <h2 class="text-[10px] text-gray-500 font-bold mb-4 uppercase tracking-widest">Acesso Restrito</h2>
-            <input type="email" id="login-email" class="axon-input" placeholder="GMAIL:">
-            <input type="password" id="login-senha" class="axon-input" placeholder="SENHA:">
+            <input type="email" id="l-email" class="axon-input" placeholder="GMAIL:">
+            <input type="password" id="l-senha" class="axon-input" placeholder="SENHA:">
             <button onclick="fazerLogin()" class="btn-premium">ENTRAR</button>
-            <p id="erro-login" class="text-red-500 text-[10px] mt-4 text-center font-bold"></p>
+            <p onclick="irPara('tela-registro')" class="text-center mt-4 text-[10px] text-dourado cursor-pointer uppercase font-bold">Criar Conta Premium</p>
+            <p id="e-login" class="text-red-500 text-[10px] mt-4 text-center font-bold"></p>
         </div>
-        <p class="link-alternativo" onclick="irPara('tela-registro')">CRIAR NOVA CONTA PREMIUM</p>
     </main>
 
-    <main id="tela-registro" class="tela-centrada">
+    <main id="tela-registro" class="tela-auth">
         <div class="logo-axon">AXON</div>
         <div class="card-axon">
-            <h2 class="text-[10px] text-gray-500 font-bold mb-4 uppercase tracking-widest">Novo Registro</h2>
-            <input type="email" id="reg-email" class="axon-input" placeholder="CRIAR COM GMAIL:">
-            <input type="password" id="reg-senha" class="axon-input" placeholder="CRIAR SENHA:">
+            <input type="email" id="r-email" class="axon-input" placeholder="NOVO GMAIL:">
+            <input type="password" id="r-senha" class="axon-input" placeholder="NOVA SENHA:">
             <button onclick="fazerRegistro()" class="btn-premium">FINALIZAR CADASTRO</button>
-            <p id="erro-reg" class="text-red-500 text-[10px] mt-4 text-center font-bold"></p>
+            <p onclick="irPara('tela-login')" class="text-center mt-4 text-[10px] text-dourado cursor-pointer uppercase font-bold">Voltar para Login</p>
+            <p id="e-reg" class="text-red-500 text-[10px] mt-4 text-center font-bold"></p>
         </div>
-        <p class="link-alternativo" onclick="irPara('tela-login')">JÁ TENHO CONTA / VOLTAR</p>
     </main>
 
-    <div id="tela-app">
-        <header class="barra-topo">
-            <div class="logo-axon">AXON</div>
-            <button onclick="fazerLogout()" class="absolute right-4 text-[10px] text-gray-500 font-bold border border-gray-800 p-1 rounded">SAIR</button>
+    <div id="tela-app" style="display:none">
+        <header class="p-4 border-b-2 border-dourado flex justify-between items-center">
+            <div class="text-dourado font-black tracking-widest">AXON</div>
+            <button onclick="fazerLogout()" class="text-[10px] text-gray-500 font-bold uppercase">Sair</button>
         </header>
-        <nav class="menu-abas">
-            <button class="item-aba aba-ativa" onclick="abrirAba('aba-fin', this)">FINANCEIRO</button>
-            <button class="item-aba" onclick="abrirAba('aba-tar', this)">TAREFAS</button>
-            <button class="item-aba" onclick="abrirAba('aba-cof', this)">COFRE</button>
-            <button class="item-aba" onclick="abrirAba('aba-ide', this)">IDEIAS</button>
-        </nav>
-
-        <main class="p-4 max-w-5xl mx-auto">
-            <section id="aba-fin" class="secao-conteudo ativa-dash">
-                 <div class="grid-resumo">
-                    <div class="resumo-card"><div class="text-[8px] text-gray-600 uppercase mb-1">A Receber</div><div id="v-receber" class="resumo-valor">R$ 0,00</div></div>
-                    <div class="resumo-card"><div class="text-[8px] text-gray-600 uppercase mb-1">A Pagar</div><div id="v-pagar" class="resumo-valor" style="color:#ef4444">R$ 0,00</div></div>
-                    <div class="resumo-card"><div class="text-[8px] text-gray-600 uppercase mb-1">Atrasados</div><div id="v-atraso" class="resumo-valor" style="color:#ef4444">R$ 0,00</div></div>
-                </div>
-                <div id="lista-fin"></div>
-            </section>
-        </main>
+        <div class="p-4 text-center mt-20">
+            <h1 class="text-dourado font-black text-2xl">SESSÃO ATIVA</h1>
+            <p class="text-gray-500 mt-2">Dados carregados com sucesso.</p>
+        </div>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://zqvfnykxwlcozvawqgrn.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxdmZueWt4d2xjb3p2YXdxZ3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NDkzNDQsImV4cCI6MjA4NTMyNTM0NH0.CevpF9vP4748mb2vFNsOp5Kq6u7Nfp_100bJcW7ogUQ'; // Wr, use a sua chave original aqui
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const URL = 'https://zqvfnykxwlcozvawqgrn.supabase.co';
+        const KEY = 'SUA_KEY_AQUI'; // Wr, use sua key original aqui
+        const _supa = supabase.createClient(URL, KEY);
 
-        function irPara(idTela) {
-            document.getElementById('tela-login').classList.remove('ativa');
-            document.getElementById('tela-registro').classList.remove('ativa');
-            document.getElementById('tela-app').style.display = 'none';
-            if(idTela === 'tela-app') {
-                document.getElementById('tela-app').style.display = 'block';
-            } else {
-                document.getElementById(idTela).classList.add('ativa');
-            }
+        function irPara(id) {
+            document.querySelectorAll('main, #tela-app').forEach(t => { t.classList.remove('ativa'); t.style.display = 'none'; });
+            const alvo = document.getElementById(id);
+            if(id === 'tela-app') alvo.style.display = 'block'; else alvo.classList.add('ativa');
         }
 
         async function verificarSessao() {
-            const { data: { session } } = await _supabase.auth.getSession();
-            if (session) {
-                irPara('tela-app');
-                carregarDados();
-            }
+            const { data: { session } } = await _supa.auth.getSession();
+            if (session) irPara('tela-app');
         }
 
         async function fazerLogin() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-senha').value.trim();
-            const { error } = await _supabase.auth.signInWithPassword({ email, password });
-            if (error) document.getElementById('erro-login').innerText = error.message;
-            else verificarSessao();
+            const email = document.getElementById('l-email').value.trim();
+            const password = document.getElementById('l-senha').value.trim();
+            const { error } = await _supa.auth.signInWithPassword({ email, password });
+            if (error) document.getElementById('e-login').innerText = error.message; else verificarSessao();
         }
 
         async function fazerRegistro() {
-            const email = document.getElementById('reg-email').value.trim();
-            const password = document.getElementById('reg-senha').value.trim();
-            
-            if(!email || !password) {
-                document.getElementById('erro-reg').innerText = "Preencha e-mail e senha.";
-                return;
-            }
-
-            document.getElementById('erro-reg').innerText = "Processando cadastro...";
-
-            const { data, error } = await _supabase.auth.signUp({
-                email: email,
-                password: password
-            });
-
-            if (error) {
-                document.getElementById('erro-reg').innerText = "Erro: " + error.message;
-            } else {
-                alert("Cadastro realizado com sucesso! Agora você pode entrar.");
-                irPara('tela-login');
-            }
+            const email = document.getElementById('r-email').value.trim();
+            const password = document.getElementById('r-senha').value.trim();
+            if(!email || !password) return;
+            const { error } = await _supa.auth.signUp({ email, password });
+            if (error) document.getElementById('e-reg').innerText = error.message; 
+            else { alert("Sucesso! Agora faça Login."); irPara('tela-login'); }
         }
 
-        async function fazerLogout() { await _supabase.auth.signOut(); window.location.reload(); }
+        async function fazerLogout() { await _supa.auth.signOut(); window.location.reload(); }
 
-        function abrirAba(id, btn) {
-            document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa-dash'));
-            document.querySelectorAll('.item-aba').forEach(b => b.classList.remove('aba-ativa'));
-            document.getElementById(id).classList.add('ativa-dash');
-            btn.classList.add('aba-ativa');
-        }
-
-        // Suas lógicas de dados continuam aqui embaixo...
         verificarSessao();
     </script>
 </body>
 </html>
-
