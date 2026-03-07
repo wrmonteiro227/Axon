@@ -10,6 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         /* --- IDENTIDADE VISUAL AXON --- */
@@ -115,7 +116,6 @@
             transition: 0.3s;
         }
 
-        /* --- ESTILO DOS INPUTS COM BOTÃO --- */
         .axon-input-group {
             display: flex;
             gap: 8px;
@@ -148,8 +148,6 @@
 
         .btn-lixeira { color: #444; transition: 0.3s; cursor: pointer; font-size: 1.1rem; }
         .btn-lixeira:hover { color: #ef4444; }
-
-        .btn-axon { background: var(--dourado); color: #000; font-weight: bold; padding: 12px 20px; border-radius: 8px; font-size: 0.75rem; text-transform: uppercase; cursor: pointer; border: none; }
 
         .dash-cofre { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); border: 2px solid var(--dourado); padding: 40px 20px; text-align: center; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.1); }
         .valor-acumulado { font-size: 3.5rem; font-weight: 900; color: var(--dourado); text-shadow: 0 0 25px rgba(212, 175, 55, 0.4); letter-spacing: -1px; }
@@ -199,7 +197,7 @@
                 <div id="lista-status" class="mb-6"></div>
                 <div class="axon-input-group">
                     <input type="text" id="input-update" class="axon-input" placeholder="Comando rápido (Ex: Raphael me pagou)">
-                    <button class="btn-send" onclick="processarComandoRapido('input-update', db_financeiro)">
+                    <button class="btn-send" onclick="processarComandoRapido('input-update', 'recebimento')">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
                     </button>
                 </div>
@@ -228,7 +226,7 @@
                 <div id="lista-status-pagamentos" class="mb-6"></div>
                 <div class="axon-input-group">
                     <input type="text" id="input-update-pag" class="axon-input" placeholder="Ex: Paguei o Aluguel">
-                    <button class="btn-send" onclick="processarComandoRapido('input-update-pag', db_pagamentos)">
+                    <button class="btn-send" onclick="processarComandoRapido('input-update-pag', 'pagamento')">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
                     </button>
                 </div>
@@ -289,6 +287,11 @@
     </main>
 
     <script>
+        // --- CONFIGURAÇÃO SUPABASE (INSIRA SEUS DADOS AQUI) ---
+        const SUPABASE_URL = 'https://zqvfnykxwlcozvawqgrn.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxdmZueWt4d2xjb3p2YXdxZ3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NDkzNDQsImV4cCI6MjA4NTMyNTM0NH0.CevpF9vP4748mb2vFNsOp5Kq6u7Nfp_100bJcW7ogUQ';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         function abrirAba(idAba, botao) {
             document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa'));
             document.querySelectorAll('.item-aba').forEach(b => b.classList.remove('ativa'));
@@ -296,12 +299,24 @@
             botao.classList.add('ativa');
         }
 
-        // --- BANCO DE DADOS ---
-        let db_financeiro = JSON.parse(localStorage.getItem('axon_db')) || [];
-        let db_cofre = JSON.parse(localStorage.getItem('axon_cofre')) || [];
-        let db_pagamentos = JSON.parse(localStorage.getItem('axon_pagamentos')) || [];
-        let db_tarefas = JSON.parse(localStorage.getItem('axon_tarefas')) || [];
-        let db_ideias = JSON.parse(localStorage.getItem('axon_ideias')) || [];
+        // --- BANCO DE DADOS (CACHE LOCAL) ---
+        let db_financeiro = [];
+        let db_cofre = [];
+        let db_tarefas = [];
+        let db_ideias = [];
+
+        async function carregarDados() {
+            const { data: fin } = await _supabase.from('financeiro').select('*');
+            const { data: cof } = await _supabase.from('cofre').select('*');
+            const { data: tar } = await _supabase.from('tarefas').select('*');
+            const { data: ide } = await _supabase.from('ideias').select('*');
+            
+            db_financeiro = fin || [];
+            db_cofre = cof || [];
+            db_tarefas = tar || [];
+            db_ideias = ide || [];
+            salvarTudo(); // Chamada para processar atrasos e renderizar
+        }
 
         function formatarDataHoje() { const hoje = new Date(); return `${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')}/${hoje.getFullYear()}`; }
 
@@ -328,73 +343,98 @@
             const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
             const verificar = (lista) => {
                 lista.forEach(item => {
-                    if (item.status === 'pago' || item.status === 'feita' || item.semPrazo) return;
+                    if (item.status === 'pago' || item.status === 'feita' || item.sem_prazo) return;
                     const p = item.data.split('/'); const venc = new Date(p[2], p[1] - 1, p[0]);
-                    if (venc < hoje) { item.status = 'atrasado'; item.motivoAtraso = `Atrasado ${Math.ceil(Math.abs(hoje - venc) / (1000 * 60 * 60 * 24))} dias`; }
+                    if (venc < hoje) { 
+                        item.status = 'atrasado'; 
+                        item.motivo_atraso = `Atrasado ${Math.ceil(Math.abs(hoje - venc) / (1000 * 60 * 60 * 24))} dias`; 
+                    }
                 });
             };
-            verificar(db_financeiro); verificar(db_pagamentos); verificar(db_tarefas);
-            localStorage.setItem('axon_db', JSON.stringify(db_financeiro));
-            localStorage.setItem('axon_cofre', JSON.stringify(db_cofre));
-            localStorage.setItem('axon_pagamentos', JSON.stringify(db_pagamentos));
-            localStorage.setItem('axon_tarefas', JSON.stringify(db_tarefas));
-            localStorage.setItem('axon_ideias', JSON.stringify(db_ideias));
+            verificar(db_financeiro); verificar(db_tarefas);
             renderizar();
         }
 
         function formatarParaSoma(str) { if (typeof str !== 'string') str = String(str); return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0; }
 
-        // --- FUNÇÃO PARA ALTERAR STATUS AO CLICAR (NOVO) ---
-        function toggleStatus(bancoNome, id) {
-            let db = (bancoNome === 'db_financeiro') ? db_financeiro : db_pagamentos;
+        async function toggleStatus(tabela, id) {
+            let db = (tabela === 'financeiro') ? db_financeiro : db_tarefas;
             let item = db.find(x => x.id === id);
             if (item) {
-                item.status = (item.status === 'pago') ? 'pendente' : 'pago';
+                const novoStatus = (item.status === 'pago' || item.status === 'feita') ? 'pendente' : (tabela === 'tarefas' ? 'feita' : 'pago');
+                await _supabase.from(tabela).update({ status: novoStatus }).eq('id', id);
+                item.status = novoStatus;
                 salvarTudo();
             }
         }
 
-        function deletarItem(bancoNome, id) {
+        async function deletarItem(tabela, id) {
             if (!confirm("Excluir item permanentemente?")) return;
-            if (bancoNome === 'db_financeiro') db_financeiro = db_financeiro.filter(i => i.id !== id);
-            if (bancoNome === 'db_pagamentos') db_pagamentos = db_pagamentos.filter(i => i.id !== id);
-            if (bancoNome === 'db_cofre') db_cofre = db_cofre.filter(i => i.id !== id);
-            if (bancoNome === 'db_tarefas') db_tarefas = db_tarefas.filter(i => i.id !== id);
-            if (bancoNome === 'db_ideias') db_ideias = db_ideias.filter(i => i.id !== id);
+            await _supabase.from(tabela).delete().eq('id', id);
+            if (tabela === 'financeiro') db_financeiro = db_financeiro.filter(i => i.id !== id);
+            if (tabela === 'cofre') db_cofre = db_cofre.filter(i => i.id !== id);
+            if (tabela === 'tarefas') db_tarefas = db_tarefas.filter(i => i.id !== id);
+            if (tabela === 'ideias') db_ideias = db_ideias.filter(i => i.id !== id);
             salvarTudo();
         }
 
-        function registrarDivida() {
+        async function registrarDivida() {
             const n = document.getElementById('reg-nome').value.trim(), v = document.getElementById('reg-valor').value.trim(), d = document.getElementById('reg-data').value.trim();
-            if (n && v) { db_financeiro.push({ id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente', motivoAtraso: '' }); salvarTudo(); ['reg-nome', 'reg-valor', 'reg-data'].forEach(i => document.getElementById(i).value = ''); }
+            if (n && v) { 
+                const novo = { id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente', motivo_atraso: '', tipo: 'recebimento' };
+                await _supabase.from('financeiro').insert([novo]);
+                db_financeiro.push(novo);
+                salvarTudo(); 
+                ['reg-nome', 'reg-valor', 'reg-data'].forEach(i => document.getElementById(i).value = ''); 
+            }
         }
 
-        function registrarPagamento() {
+        async function registrarPagamento() {
             const n = document.getElementById('pag-nome').value.trim(), v = document.getElementById('pag-valor').value.trim(), d = document.getElementById('pag-data').value.trim();
-            if (n && v) { db_pagamentos.push({ id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente', motivoAtraso: '' }); salvarTudo(); ['pag-nome', 'pag-valor', 'pag-data'].forEach(i => document.getElementById(i).value = ''); }
+            if (n && v) { 
+                const novo = { id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente', motivo_atraso: '', tipo: 'pagamento' };
+                await _supabase.from('financeiro').insert([novo]);
+                db_financeiro.push(novo);
+                salvarTudo(); 
+                ['pag-nome', 'pag-valor', 'pag-data'].forEach(i => document.getElementById(i).value = ''); 
+            }
         }
 
-        function registrarTarefaBotao() {
+        async function registrarTarefaBotao() {
             const el = document.getElementById('input-tarefa'); const texto = el.value.trim();
             if (!texto) return;
             const regex = /(.+?)\s+(\d{4}|\d{8}|segunda|terça|terca|quarta|quinta|sexta|sábado|sabado|domingo)$/i;
             const match = texto.match(regex);
-            if (match) db_tarefas.push({ id: Date.now(), nome: match[1].trim(), data: tratarDataAxon(match[2]), status: 'pendente', semPrazo: false });
-            else db_tarefas.push({ id: Date.now(), nome: texto, data: formatarDataHoje(), status: 'pendente', semPrazo: true });
+            let nova;
+            if (match) nova = { id: Date.now(), nome: match[1].trim(), data: tratarDataAxon(match[2]), status: 'pendente', sem_prazo: false };
+            else nova = { id: Date.now(), nome: texto, data: formatarDataHoje(), status: 'pendente', sem_prazo: true };
+            await _supabase.from('tarefas').insert([nova]);
+            db_tarefas.push(nova);
             el.value = ''; salvarTudo();
         }
 
-        function registrarNoCofre() {
+        async function registrarNoCofre() {
             const v = document.getElementById('cofre-valor').value.trim(), d = document.getElementById('cofre-data').value.trim();
-            if (v) { db_cofre.push({ id: Date.now(), valor: v, data: tratarDataAxon(d) }); salvarTudo(); ['cofre-valor', 'cofre-data'].forEach(i => document.getElementById(i).value = ''); }
+            if (v) { 
+                const novo = { id: Date.now(), valor: v, data: tratarDataAxon(d) };
+                await _supabase.from('cofre').insert([novo]);
+                db_cofre.push(novo);
+                salvarTudo(); 
+                ['cofre-valor', 'cofre-data'].forEach(i => document.getElementById(i).value = ''); 
+            }
         }
 
-        function registrarIdeia() {
+        async function registrarIdeia() {
             const texto = document.getElementById('input-ideia').value.trim();
-            if (texto) { db_ideias.push({ id: Date.now(), texto: texto, data: formatarDataHoje() }); document.getElementById('input-ideia').value = ''; salvarTudo(); }
+            if (texto) { 
+                const nova = { id: Date.now(), texto: texto, data: formatarDataHoje() };
+                await _supabase.from('ideias').insert([nova]);
+                db_ideias.push(nova);
+                document.getElementById('input-ideia').value = ''; salvarTudo(); 
+            }
         }
 
-        function processarComandoRapido(inputId, db) {
+        async function processarComandoRapido(inputId, tipo) {
             const el = document.getElementById(inputId); const comando = el.value.toLowerCase().trim();
             if (!comando) return;
             const p1 = comando.match(/(.+?)\s+(?:me\s+)?pagou\s*([\d.]+)?/i);
@@ -402,19 +442,25 @@
             const p3 = comando.match(/(.+?)\s+(?:paguei|pago)\s*([\d.]+)?/i);
             const p4 = comando.match(/(?:paguei|pago)\s+(?:o\s+|a\s+)?(.+?)\s*([\d.]+)?$/i);
             let nome = ""; const m = p1 || p2 || p3 || p4; if (m) { nome = (m[1] || m[2]).trim(); }
-            if (nome) { const alvo = db.find(r => r.nome.toLowerCase().includes(nome) && r.status !== 'pago'); if (alvo) alvo.status = 'pago'; }
+            if (nome) { 
+                const alvo = db_financeiro.find(r => r.nome.toLowerCase().includes(nome) && r.status !== 'pago' && r.tipo === tipo); 
+                if (alvo) {
+                    await _supabase.from('financeiro').update({ status: 'pago' }).eq('id', alvo.id);
+                    alvo.status = 'pago';
+                }
+            }
             el.value = ''; salvarTudo();
         }
 
         function renderizar() {
-            const renderFinanceiro = (db, statusId, DashIds, bancoNome) => {
+            const renderFluxo = (tipo, statusId, DashIds) => {
                 const list = document.getElementById(statusId); if (!list) return;
                 list.innerHTML = ''; let sP = 0, sPa = 0, sA = 0;
-                db.forEach(item => {
+                db_financeiro.filter(x => x.tipo === tipo).forEach(item => {
                     const v = formatarParaSoma(item.valor || "0");
                     if (item.status === 'pago') sPa += v; else { sP += v; if (item.status === 'atrasado') sA += v; }
                     let sC = item.status === 'pago' ? 'badge-pago' : (item.status === 'atrasado' ? 'badge-atrasado' : 'badge-pendente');
-                    list.innerHTML += `<div class="item-axon"><div><div class="font-bold text-white">${item.nome}</div><div class="text-[10px] text-gray-400">R$ ${item.valor} | Vencimento: ${item.data}</div></div><div class="flex items-center gap-3"><span class="badge ${sC}" onclick="toggleStatus('${bancoNome}', ${item.id})">${item.status === 'pago' ? 'Pago' : (item.status === 'atrasado' ? item.motivoAtraso : 'Pendente')}</span><div class="btn-lixeira" onclick="deletarItem('${bancoNome}', ${item.id})">🗑️</div></div></div>`;
+                    list.innerHTML += `<div class="item-axon"><div><div class="font-bold text-white">${item.nome}</div><div class="text-[10px] text-gray-400">R$ ${item.valor} | Vencimento: ${item.data}</div></div><div class="flex items-center gap-3"><span class="badge ${sC}" onclick="toggleStatus('financeiro', ${item.id})">${item.status === 'pago' ? 'Pago' : (item.status === 'atrasado' ? item.motivo_atraso : 'Pendente')}</span><div class="btn-lixeira" onclick="deletarItem('financeiro', ${item.id})">🗑️</div></div></div>`;
                 });
                 document.getElementById(DashIds[0]).innerText = `R$ ${sP.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
                 document.getElementById(DashIds[1]).innerText = `R$ ${sPa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
@@ -425,23 +471,25 @@
                 const lT = document.getElementById('lista-tarefas'), lTF = document.getElementById('lista-tarefas-feitas');
                 lT.innerHTML = ''; lTF.innerHTML = '';
                 db_tarefas.forEach(item => {
-                    const html = `<div class="item-axon"><div><div class="font-bold text-white">${item.nome}</div><div class="text-[10px] text-gray-500">${item.semPrazo ? 'Salva em' : 'Vencimento'}: ${item.data}</div></div><div class="flex items-center gap-3"><span class="badge ${item.status === 'feita' ? 'badge-pago' : (item.status === 'atrasado' ? 'badge-atrasado' : 'badge-pendente')}" onclick="const a = db_tarefas.find(t=>t.id===${item.id}); a.status=(a.status==='feita'?'pendente':'feita'); salvarTudo();">${item.status==='feita'?'Feito':'Fazer'}</span><div class="btn-lixeira" onclick="deletarItem('db_tarefas', ${item.id})">🗑️</div></div></div>`;
+                    const html = `<div class="item-axon"><div><div class="font-bold text-white">${item.nome}</div><div class="text-[10px] text-gray-500">${item.sem_prazo ? 'Salva em' : 'Vencimento'}: ${item.data}</div></div><div class="flex items-center gap-3"><span class="badge ${item.status === 'feita' ? 'badge-pago' : (item.status === 'atrasado' ? 'badge-atrasado' : 'badge-pendente')}" onclick="toggleStatus('tarefas', ${item.id})">${item.status==='feita'?'Feito':'Fazer'}</span><div class="btn-lixeira" onclick="deletarItem('tarefas', ${item.id})">🗑️</div></div></div>`;
                     if (item.status === 'feita') lTF.innerHTML += html; else lT.innerHTML += html;
                 });
             };
 
-            renderFinanceiro(db_financeiro, 'lista-status', ['total-receber', 'total-receb-pago', 'total-receb-atraso'], 'db_financeiro');
-            renderFinanceiro(db_pagamentos, 'lista-status-pagamentos', ['total-pagar', 'total-pago-realizado', 'total-pagar-atraso'], 'db_pagamentos');
+            renderFluxo('recebimento', 'lista-status', ['total-receber', 'total-receb-pago', 'total-receb-atraso']);
+            renderFluxo('pagamento', 'lista-status-pagamentos', ['total-pagar', 'total-pago-realizado', 'total-pagar-atraso']);
             renderTarefas();
 
             const lC = document.getElementById('lista-cofre'); lC.innerHTML = ''; let sCof = 0;
-            db_cofre.slice().reverse().forEach(i => { sCof += formatarParaSoma(i.valor); lC.innerHTML += `<div class="item-axon" style="border-left: 4px solid #fff;"><div><div class="font-bold text-white">Depósito</div><div class="text-[10px] text-gray-500">Data: ${i.data}</div></div><div class="flex items-center gap-3"><div class="font-black text-white">R$ ${i.valor}</div><div class="btn-lixeira" onclick="deletarItem('db_cofre', ${i.id})">🗑️</div></div></div>`; });
+            db_cofre.slice().sort((a,b) => b.id - a.id).forEach(i => { sCof += formatarParaSoma(i.valor); lC.innerHTML += `<div class="item-axon" style="border-left: 4px solid #fff;"><div><div class="font-bold text-white">Depósito</div><div class="text-[10px] text-gray-500">Data: ${i.data}</div></div><div class="flex items-center gap-3"><div class="font-black text-white">R$ ${i.valor}</div><div class="btn-lixeira" onclick="deletarItem('cofre', ${i.id})">🗑️</div></div></div>`; });
             document.getElementById('valor-cofre-total').innerText = `R$ ${sCof.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
             const mural = document.getElementById('mural-ideias'); mural.innerHTML = '';
-            db_ideias.slice().reverse().forEach(i => { mural.innerHTML += `<div class="balao-ideia"><div class="header-ideia"><span style="font-size: 0.6rem; color: #666;">LOG: ${i.data}</span><div class="btn-lixeira" onclick="deletarItem('db_ideias', ${i.id})">🗑️</div></div><div class="corpo-ideia">${i.texto}</div></div>`; });
+            db_ideias.slice().sort((a,b) => b.id - a.id).forEach(i => { mural.innerHTML += `<div class="balao-ideia"><div class="header-ideia"><span style="font-size: 0.6rem; color: #666;">LOG: ${i.data}</span><div class="btn-lixeira" onclick="deletarItem('ideias', ${i.id})">🗑️</div></div><div class="corpo-ideia">${i.texto}</div></div>`; });
         }
-        renderizar();
+
+        // Inicialização
+        carregarDados();
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
     </script>
