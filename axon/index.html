@@ -156,6 +156,26 @@
         .header-ideia { background: #151515; padding: 8px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
         .corpo-ideia { padding: 15px; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #d1d5db; white-space: pre-wrap; }
 
+        /* Estilo Botão Download */
+        .btn-download-axon {
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+            color: #000;
+            font-weight: 900;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            transition: 0.3s;
+        }
+        .btn-download-axon:disabled {
+            background: #222;
+            color: #444;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
         @media (max-width: 768px) { .grid-resumo { grid-template-columns: 1fr; } .valor-acumulado { font-size: 2.2rem; } }
     </style>
 </head>
@@ -169,6 +189,7 @@
         <button class="item-aba" onclick="abrirAba('aba-tarefas', this)">TAREFAS</button>
         <button class="item-aba" onclick="abrirAba('aba-cofre', this)">COFRE</button>
         <button class="item-aba" onclick="abrirAba('aba-ideias', this)">IDEIAS</button>
+        <button class="item-aba" onclick="abrirAba('aba-download', this)">AXON DOWNLOAD</button>
     </nav>
 
     <main class="p-4 md:p-8 max-w-5xl mx-auto">
@@ -284,13 +305,50 @@
             </div>
         </section>
 
+        <section id="aba-download" class="secao-conteudo">
+            <div class="card-axon text-center">
+                <h2 class="titulo-lista justify-center"><span>●</span> Versão Mobile</h2>
+                <p class="text-gray-400 text-sm mb-6">Instale o AXON na sua tela inicial para acesso instantâneo e experiência premium sem barras de navegador.</p>
+                
+                <button id="btn-install" class="btn-download-axon" disabled onclick="instalarAxon()">
+                    Instalar AXON no Celular
+                </button>
+                
+                <p id="msg-install" class="text-[10px] text-gray-500 mt-4">Aguardando validação do sistema...</p>
+            </div>
+        </section>
+
     </main>
 
     <script>
-        // --- CONFIGURAÇÃO SUPABASE (INSIRA SEUS DADOS AQUI) ---
-        const SUPABASE_URL = 'https://zqvfnykxwlcozvawqgrn.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxdmZueWt4d2xjb3p2YXdxZ3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NDkzNDQsImV4cCI6MjA4NTMyNTM0NH0.CevpF9vP4748mb2vFNsOp5Kq6u7Nfp_100bJcW7ogUQ';
+        // --- CONFIGURAÇÃO SUPABASE ---
+        const SUPABASE_URL = 'SUA_URL_AQUI';
+        const SUPABASE_KEY = 'SUA_ANON_KEY_AQUI';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // --- LÓGICA DE INSTALAÇÃO PWA ---
+        let deferredPrompt;
+        const btnInstall = document.getElementById('btn-install');
+        const msgInstall = document.getElementById('msg-install');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            btnInstall.disabled = false;
+            msgInstall.innerText = "AXON pronto para ser instalado!";
+            msgInstall.style.color = "#d4af37";
+        });
+
+        async function instalarAxon() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                btnInstall.disabled = true;
+                msgInstall.innerText = "Instalação iniciada!";
+            }
+            deferredPrompt = null;
+        }
 
         function abrirAba(idAba, botao) {
             document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa'));
@@ -315,7 +373,7 @@
             db_cofre = cof || [];
             db_tarefas = tar || [];
             db_ideias = ide || [];
-            salvarTudo(); // Chamada para processar atrasos e renderizar
+            salvarTudo();
         }
 
         function formatarDataHoje() { const hoje = new Date(); return `${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')}/${hoje.getFullYear()}`; }
