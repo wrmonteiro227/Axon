@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AXON - Gestão Premium</title>
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#d4af37">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AXON">
+    <link rel="apple-touch-icon" href="icon-192.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -20,8 +24,9 @@
             --cinza-hover: #1a1a1a;
         }
 
+        html { background-color: #000; }
+
         body {
-            background-color: var(--preto-profundo);
             color: #e2e8f0;
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -29,19 +34,31 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             padding-bottom: env(safe-area-inset-bottom);
+            position: relative;
+            background: transparent;
+        }
+
+        /* --- CAMADA DE IMAGEM DE FUNDO (ASSETS/FUNDO.PNG) --- */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('assets/fundo.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.05; /* Baixa opacidade para não atrapalhar */
+            z-index: -1;
         }
 
         .barra-topo {
             background-color: #000;
             height: calc(70px + env(safe-area-inset-top));
             padding-top: env(safe-area-inset-top);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             border-bottom: 2px solid var(--dourado);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            position: sticky; top: 0; z-index: 1000;
         }
 
         .logo-axon {
@@ -53,33 +70,21 @@
         }
 
         .menu-abas {
-            display: flex;
-            justify-content: flex-start;
-            background: #0a0a0a;
+            display: flex; justify-content: flex-start;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-            overflow-x: auto;
-            scrollbar-width: none;
+            overflow-x: auto; scrollbar-width: none;
         }
         .menu-abas::-webkit-scrollbar { display: none; }
 
         .item-aba {
-            padding: 15px 20px;
-            color: #555;
-            font-size: 0.7rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: 0.3s;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            background: none;
-            border: none;
+            padding: 15px 20px; color: #555; font-size: 0.7rem; font-weight: bold;
+            letter-spacing: 1px; cursor: pointer; transition: 0.3s;
+            border-bottom: 3px solid transparent; white-space: nowrap;
+            background: none; border: none;
         }
         .item-aba.ativa { color: var(--dourado); border-bottom: 3px solid var(--dourado); }
-
-        .secao-conteudo { display: none; animation: fadeIn 0.4s ease-out; }
-        .secao-conteudo.ativa { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .grid-resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
         .resumo-card { background: #000; border: 1px solid rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 10px; text-align: center; }
@@ -87,58 +92,24 @@
         .resumo-valor { color: var(--dourado); font-weight: 900; font-size: 1.1rem; }
 
         .card-axon {
-            background: var(--cinza-card);
+            background: rgba(17, 17, 17, 0.9);
             border: 1px solid rgba(212, 175, 55, 0.15);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
+            border-radius: 12px; padding: 24px; margin-bottom: 24px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .titulo-lista {
-            color: var(--dourado);
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center; gap: 12px;
-        }
+        .titulo-lista { color: var(--dourado); font-size: 0.85rem; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
 
         .item-axon {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid #222;
-            padding: 16px;
-            border-radius: 10px;
-            margin-bottom: 12px;
+            background: rgba(0,0,0,0.5); border: 1px solid #222;
+            padding: 16px; border-radius: 10px; margin-bottom: 12px;
             display: flex; justify-content: space-between; align-items: center;
-            transition: 0.3s;
         }
 
-        /* --- ESTILO DOS INPUTS COM BOTÃO --- */
-        .axon-input-group {
-            display: flex;
-            gap: 8px;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .axon-input {
-            background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; outline: none; font-size: 0.85rem; flex-grow: 1;
-        }
-
-        .btn-send {
-            background: var(--dourado);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            width: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        /* --- INPUTS COM BOTÃO --- */
+        .axon-input-group { display: flex; gap: 8px; width: 100%; margin-bottom: 10px; }
+        .axon-input { background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; outline: none; font-size: 0.85rem; flex-grow: 1; }
+        .btn-send { background: var(--dourado); color: #000; border: none; border-radius: 8px; width: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .btn-send:active { transform: scale(0.9); }
 
         .badge { font-size: 0.65rem; font-weight: 800; padding: 4px 10px; border-radius: 5px; text-transform: uppercase; cursor: pointer; }
@@ -149,10 +120,8 @@
         .btn-lixeira { color: #444; transition: 0.3s; cursor: pointer; font-size: 1.1rem; }
         .btn-lixeira:hover { color: #ef4444; }
 
-        .btn-axon { background: var(--dourado); color: #000; font-weight: bold; padding: 12px 20px; border-radius: 8px; font-size: 0.75rem; text-transform: uppercase; cursor: pointer; border: none; }
-
         .dash-cofre { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); border: 2px solid var(--dourado); padding: 40px 20px; text-align: center; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.1); }
-        .valor-acumulado { font-size: 3.5rem; font-weight: 900; color: var(--dourado); text-shadow: 0 0 25px rgba(212, 175, 55, 0.4); letter-spacing: -1px; }
+        .valor-acumulado { font-size: 3.5rem; font-weight: 900; color: var(--dourado); text-shadow: 0 0 25px rgba(212, 175, 55, 0.4); }
 
         .balao-ideia { background: #0d0d0d; border: 1px solid #222; border-left: 4px solid var(--dourado); border-radius: 8px; margin-bottom: 20px; }
         .header-ideia { background: #151515; padding: 8px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
@@ -198,7 +167,7 @@
                 <h2 class="titulo-lista"><span>●</span> Controle de Status</h2>
                 <div id="lista-status" class="mb-6"></div>
                 <div class="axon-input-group">
-                    <input type="text" id="input-update" class="axon-input" placeholder="Comando rápido (Ex: Raphael me pagou)">
+                    <input type="text" id="input-update" class="axon-input" placeholder="Comando rápido...">
                     <button class="btn-send" onclick="processarComandoRapido('input-update', db_financeiro)">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
                     </button>
@@ -234,7 +203,7 @@
                 </div>
             </div>
         </section>
-
+        
         <section id="aba-tarefas" class="secao-conteudo">
             <div class="card-axon">
                 <h2 class="titulo-lista"><span>●</span> Minhas Tarefas Diárias</h2>
@@ -254,12 +223,12 @@
 
         <section id="aba-cofre" class="secao-conteudo">
             <div class="dash-cofre">
-                <div class="resumo-label">PATRIMÔNIO ACUMULADO</div>
+                <div class="resumo-label" style="font-size: 0.8rem; margin-bottom: 10px;">PATRIMÔNIO ACUMULADO</div>
                 <div id="valor-cofre-total" class="valor-acumulado">R$ 0,00</div>
             </div>
             <div class="card-axon">
                 <h2 class="titulo-lista"><span>●</span> NOVO APORTE NO COFRE</h2>
-                <div class="axon-input-group"><input type="text" id="cofre-valor" class="axon-input" placeholder="VALOR PARA GUARDAR:"></div>
+                <div class="axon-input-group"><input type="text" id="cofre-valor" class="axon-input" placeholder="VALOR:"></div>
                 <div class="axon-input-group">
                     <input type="text" id="cofre-data" class="axon-input" placeholder="DATA:">
                     <button class="btn-send" onclick="registrarNoCofre()">
@@ -285,7 +254,6 @@
                 <div id="mural-ideias" class="mt-6"></div>
             </div>
         </section>
-
     </main>
 
     <script>
@@ -296,7 +264,6 @@
             botao.classList.add('ativa');
         }
 
-        // --- BANCO DE DADOS ---
         let db_financeiro = JSON.parse(localStorage.getItem('axon_db')) || [];
         let db_cofre = JSON.parse(localStorage.getItem('axon_cofre')) || [];
         let db_pagamentos = JSON.parse(localStorage.getItem('axon_pagamentos')) || [];
@@ -309,17 +276,14 @@
             let txt = valor.toLowerCase().trim();
             if (!txt) return formatarDataHoje();
             const hoje = new Date();
-            const anoAtual = hoje.getFullYear();
             const diasSemana = { 'domingo': 0, 'segunda': 1, 'terça': 2, 'terca': 2, 'quarta': 3, 'quinta': 4, 'sexta': 5, 'sábado': 6, 'sabado': 6 };
             if (diasSemana[txt] !== undefined) {
-                let dataResult = new Date();
-                let diff = (diasSemana[txt] + 7 - hoje.getDay()) % 7;
-                if (diff === 0) diff = 7;
-                dataResult.setDate(hoje.getDate() + diff);
-                return `${String(dataResult.getDate()).padStart(2, '0')}/${String(dataResult.getMonth() + 1).padStart(2, '0')}/${dataResult.getFullYear()}`;
+                let dR = new Date(); let diff = (diasSemana[txt] + 7 - hoje.getDay()) % 7;
+                if (diff === 0) diff = 7; dR.setDate(hoje.getDate() + diff);
+                return `${String(dR.getDate()).padStart(2, '0')}/${String(dR.getMonth() + 1).padStart(2, '0')}/${dR.getFullYear()}`;
             }
             let apenasNumeros = txt.replace(/\D/g, "");
-            if (apenasNumeros.length === 4) return apenasNumeros.substring(0, 2) + "/" + apenasNumeros.substring(2, 4) + "/" + anoAtual;
+            if (apenasNumeros.length === 4) return apenasNumeros.substring(0, 2) + "/" + apenasNumeros.substring(2, 4) + "/" + hoje.getFullYear();
             if (apenasNumeros.length === 8) return apenasNumeros.substring(0, 2) + "/" + apenasNumeros.substring(2, 4) + "/" + apenasNumeros.substring(4, 8);
             return valor || formatarDataHoje();
         }
@@ -344,14 +308,10 @@
 
         function formatarParaSoma(str) { if (typeof str !== 'string') str = String(str); return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0; }
 
-        // --- FUNÇÃO PARA ALTERAR STATUS AO CLICAR (NOVO) ---
         function toggleStatus(bancoNome, id) {
             let db = (bancoNome === 'db_financeiro') ? db_financeiro : db_pagamentos;
             let item = db.find(x => x.id === id);
-            if (item) {
-                item.status = (item.status === 'pago') ? 'pendente' : 'pago';
-                salvarTudo();
-            }
+            if (item) { item.status = (item.status === 'pago') ? 'pendente' : 'pago'; salvarTudo(); }
         }
 
         function deletarItem(bancoNome, id) {
