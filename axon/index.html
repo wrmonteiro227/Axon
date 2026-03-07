@@ -15,51 +15,37 @@
     <style>
         :root { --dourado: #d4af37; --preto-profundo: #050505; --cinza-card: #111111; }
         body { background-color: var(--preto-profundo); color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; padding-bottom: env(safe-area-inset-bottom); }
-        
         #tela-auth { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
         #tela-app { display: none; }
-
         .barra-topo { background-color: #000; height: calc(70px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--dourado); position: sticky; top: 0; z-index: 1000; }
         .logo-axon { color: var(--dourado); font-weight: 900; font-size: 2rem; letter-spacing: 12px; text-transform: uppercase; }
-
         .menu-abas { display: flex; justify-content: flex-start; background: #0a0a0a; border-bottom: 1px solid rgba(212, 175, 55, 0.1); overflow-x: auto; scrollbar-width: none; }
         .menu-abas::-webkit-scrollbar { display: none; }
         .item-aba { padding: 15px 20px; color: #555; font-size: 0.7rem; font-weight: bold; letter-spacing: 1px; cursor: pointer; transition: 0.3s; border-bottom: 3px solid transparent; white-space: nowrap; background: none; border: none; }
         .item-aba.ativa { color: var(--dourado); border-bottom: 3px solid var(--dourado); }
-
         .secao-conteudo { display: none; animation: fadeIn 0.4s ease-out; }
         .secao-conteudo.ativa { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+        .card-axon { background: var(--cinza-card); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .titulo-lista { color: var(--dourado); font-size: 0.85rem; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
+        .axon-input { background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; outline: none; font-size: 0.85rem; width: 100%; margin-bottom: 10px; }
+        .btn-premium { background: var(--dourado); color: #000; font-weight: 900; padding: 14px; border-radius: 8px; width: 100%; text-transform: uppercase; cursor: pointer; border: none; }
+        .item-axon { background: rgba(0,0,0,0.4); border: 1px solid #222; padding: 16px; border-radius: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .grid-resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
         .resumo-card { background: #000; border: 1px solid rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 10px; text-align: center; }
-        .resumo-label { color: #666; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
         .resumo-valor { color: var(--dourado); font-weight: 900; font-size: 1.1rem; }
-
-        .card-axon { background: var(--cinza-card); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .titulo-lista { color: var(--dourado); font-size: 0.85rem; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
-        .item-axon { background: rgba(0,0,0,0.4); border: 1px solid #222; padding: 16px; border-radius: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        .axon-input-group { display: flex; gap: 8px; width: 100%; margin-bottom: 10px; }
-        .axon-input { background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; outline: none; font-size: 0.85rem; flex-grow: 1; }
-        .btn-send { background: var(--dourado); color: #000; border: none; border-radius: 8px; width: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .btn-send:active { transform: scale(0.9); }
-        .btn-premium { background: var(--dourado); color: #000; font-weight: 900; padding: 14px; border-radius: 8px; width: 100%; text-transform: uppercase; cursor: pointer; transition: 0.2s; border: none; }
-
-        .badge { font-size: 0.65rem; font-weight: 800; padding: 4px 10px; border-radius: 5px; text-transform: uppercase; cursor: pointer; }
+        .badge { font-size: 0.65rem; font-weight: 800; padding: 4px 10px; border-radius: 5px; text-transform: uppercase; }
         .badge-pendente { background: rgba(212, 175, 55, 0.1); color: var(--dourado); border: 1px solid var(--dourado); }
         .badge-pago { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
         .badge-atrasado { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
-
-        .btn-lixeira { color: #444; transition: 0.3s; cursor: pointer; font-size: 1.1rem; }
-        .btn-lixeira:hover { color: #ef4444; }
-
-        .dash-cofre { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); border: 2px solid var(--dourado); padding: 40px 20px; text-align: center; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.1); }
-        .valor-acumulado { font-size: 3.5rem; font-weight: 900; color: var(--dourado); text-shadow: 0 0 25px rgba(212, 175, 55, 0.4); letter-spacing: -1px; }
-
+        .btn-lixeira { cursor: pointer; color: #444; font-size: 1.1rem; }
+        .axon-input-group { display: flex; gap: 8px; width: 100%; margin-bottom: 10px; }
+        .btn-send { background: var(--dourado); color: #000; border: none; border-radius: 8px; width: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .dash-cofre { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); border: 2px solid var(--dourado); padding: 40px 20px; text-align: center; border-radius: 20px; margin-bottom: 30px; }
+        .valor-acumulado { font-size: 3.5rem; font-weight: 900; color: var(--dourado); }
         .balao-ideia { background: #0d0d0d; border: 1px solid #222; border-left: 4px solid var(--dourado); border-radius: 8px; margin-bottom: 20px; }
-        .header-ideia { background: #151515; padding: 8px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
+        .header-ideia { background: #151515; padding: 8px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
         .corpo-ideia { padding: 15px; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #d1d5db; white-space: pre-wrap; }
-
         @media (max-width: 768px) { .grid-resumo { grid-template-columns: 1fr; } .valor-acumulado { font-size: 2.2rem; } }
     </style>
 </head>
@@ -131,7 +117,7 @@
                     <div class="resumo-card"><div class="resumo-label">Boletos em Atraso</div><div id="total-pagar-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
                 </div>
                 <div class="card-axon">
-                    <h2 class="titulo-lista"><span>●</span> Minhas Contas a Pagar</h2>
+                    <h2 class="titulo-lista"><span>●</span> Minhas Contas</h2>
                     <div class="axon-input-group"><input type="text" id="pag-nome" class="axon-input" placeholder="DESCRIÇÃO:"></div>
                     <div class="axon-input-group"><input type="text" id="pag-valor" class="axon-input" placeholder="VALOR:"></div>
                     <div class="axon-input-group">
@@ -200,7 +186,7 @@
 
             <section id="aba-download" class="secao-conteudo">
                 <div class="card-axon text-center">
-                    <h2 class="titulo-lista"><span>●</span> Instalar AXON</h2>
+                    <h2 class="titulo-lista"><span>●</span> Instalação AXON</h2>
                     <button id="btnInstalar" class="btn-premium">ADICIONAR À TELA INICIAL</button>
                 </div>
             </section>
@@ -241,7 +227,7 @@
 
         async function fazerLogout() { await _supabase.auth.signOut(); window.location.reload(); }
 
-        // --- DASHBOARD ---
+        // --- CORE ---
         let db_financeiro = [], db_cofre = [], db_tarefas = [], db_ideias = [];
 
         async function carregarDados() {
@@ -323,9 +309,8 @@
             const n = document.getElementById('reg-nome').value.trim(), v = document.getElementById('reg-valor').value.trim(), d = document.getElementById('reg-data').value.trim();
             if (n && v) { 
                 const novo = { id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente', motivo_atraso: '', tipo: 'recebimento' };
-                await _supabase.from('financeiro').insert([novo]);
-                db_financeiro.push(novo); salvarTudo(); 
-                ['reg-nome', 'reg-valor', 'reg-data'].forEach(i => document.getElementById(i).value = ''); 
+                const { error } = await _supabase.from('financeiro').insert([novo]);
+                if (!error) { db_financeiro.push(novo); salvarTudo(); ['reg-nome', 'reg-valor', 'reg-data'].forEach(i => document.getElementById(i).value = ''); }
             }
         }
 
@@ -333,9 +318,8 @@
             const n = document.getElementById('pag-nome').value.trim(), v = document.getElementById('pag-valor').value.trim(), d = document.getElementById('pag-data').value.trim();
             if (n && v) { 
                 const novo = { id: Date.now(), nome: n, valor: v, data: tratarDataAxon(d), status: 'pendente', motivo_atraso: '', tipo: 'pagamento' };
-                await _supabase.from('financeiro').insert([novo]);
-                db_financeiro.push(novo); salvarTudo(); 
-                ['pag-nome', 'pag-valor', 'pag-data'].forEach(i => document.getElementById(i).value = ''); 
+                const { error } = await _supabase.from('financeiro').insert([novo]);
+                if (!error) { db_financeiro.push(novo); salvarTudo(); ['pag-nome', 'pag-valor', 'pag-data'].forEach(i => document.getElementById(i).value = ''); }
             }
         }
 
@@ -347,17 +331,16 @@
             let nova;
             if (match) nova = { id: Date.now(), nome: match[1].trim(), data: tratarDataAxon(match[2]), status: 'pendente', sem_prazo: false };
             else nova = { id: Date.now(), nome: texto, data: formatarDataHoje(), status: 'pendente', sem_prazo: true };
-            await _supabase.from('tarefas').insert([nova]);
-            db_tarefas.push(nova); el.value = ''; salvarTudo();
+            const { error } = await _supabase.from('tarefas').insert([nova]);
+            if (!error) { db_tarefas.push(nova); el.value = ''; salvarTudo(); }
         }
 
         async function registrarNoCofre() {
             const v = document.getElementById('cofre-valor').value.trim(), d = document.getElementById('cofre-data').value.trim();
             if (v) { 
                 const novo = { id: Date.now(), valor: v, data: tratarDataAxon(d) };
-                await _supabase.from('cofre').insert([novo]);
-                db_cofre.push(novo); salvarTudo(); 
-                ['cofre-valor', 'cofre-data'].forEach(i => document.getElementById(i).value = ''); 
+                const { error } = await _supabase.from('cofre').insert([novo]);
+                if (!error) { db_cofre.push(novo); salvarTudo(); ['cofre-valor', 'cofre-data'].forEach(i => document.getElementById(i).value = ''); }
             }
         }
 
@@ -365,26 +348,19 @@
             const texto = document.getElementById('input-ideia').value.trim();
             if (texto) { 
                 const nova = { id: Date.now(), texto: texto, data: formatarDataHoje() };
-                await _supabase.from('ideias').insert([nova]);
-                db_ideias.push(nova);
-                document.getElementById('input-ideia').value = ''; salvarTudo(); 
+                const { error } = await _supabase.from('ideias').insert([nova]);
+                if (!error) { db_ideias.push(nova); document.getElementById('input-ideia').value = ''; salvarTudo(); }
             }
         }
 
         async function processarComandoRapido(inputId, tipo) {
             const el = document.getElementById(inputId); const comando = el.value.toLowerCase().trim();
             if (!comando) return;
-            const p1 = comando.match(/(.+?)\s+(?:me\s+)?pagou\s*([\d.]+)?/i);
-            const p2 = comando.match(/(?:me\s+)?pagou\s+(?:o\s+|a\s+)?(.+?)\s*([\d.]+)?$/i);
-            const p3 = comando.match(/(.+?)\s+(?:paguei|pago)\s*([\d.]+)?/i);
-            const p4 = comando.match(/(?:paguei|pago)\s+(?:o\s+|a\s+)?(.+?)\s*([\d.]+)?$/i);
-            let nome = ""; const m = p1 || p2 || p3 || p4; if (m) { nome = (m[1] || m[2]).trim(); }
-            if (nome) { 
+            const m = comando.match(/(.+?)\s+(?:me\s+)?pagou/i) || comando.match(/(?:me\s+)?pagou\s+(?:o\s+|a\s+)?(.+)/i) || comando.match(/(.+?)\s+(?:paguei|pago)/i) || comando.match(/(?:paguei|pago)\s+(?:o\s+|a\s+)?(.+)/i);
+            if (m) { 
+                const nome = (m[1] || m[2]).trim();
                 const alvo = db_financeiro.find(r => r.nome.toLowerCase().includes(nome) && r.status !== 'pago' && r.tipo === tipo); 
-                if (alvo) {
-                    await _supabase.from('financeiro').update({ status: 'pago' }).eq('id', alvo.id);
-                    alvo.status = 'pago';
-                }
+                if (alvo) { await _supabase.from('financeiro').update({ status: 'pago' }).eq('id', alvo.id); alvo.status = 'pago'; }
             }
             el.value = ''; salvarTudo();
         }
@@ -430,7 +406,6 @@
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); promptInstalacao = e; });
         document.getElementById('btnInstalar').addEventListener('click', async () => { if (promptInstalacao) { promptInstalacao.prompt(); const { outcome } = await promptInstalacao.userChoice; if (outcome === 'accepted') promptInstalacao = null; } });
 
-        // INICIALIZAÇÃO
         verificarSessao();
     </script>
 </body>
