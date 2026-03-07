@@ -32,6 +32,10 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
+        /* CONTROLE DE TELAS */
+        #tela-auth { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        #tela-app { display: none; }
+
         .barra-topo {
             background-color: #000;
             height: calc(70px + env(safe-area-inset-top));
@@ -156,166 +160,204 @@
         .header-ideia { background: #151515; padding: 8px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
         .corpo-ideia { padding: 15px; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #d1d5db; white-space: pre-wrap; }
 
-        /* Estilo do Botão na Aba Download */
-        .btn-download-axon {
-            background: var(--dourado);
-            color: #000;
-            font-weight: 900;
-            padding: 18px;
-            border-radius: 8px;
-            width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            display: block;
-            margin-top: 20px;
-        }
+        .btn-premium { background: var(--dourado); color: #000; font-weight: 900; padding: 14px; border-radius: 8px; width: 100%; text-transform: uppercase; cursor: pointer; transition: 0.2s; border: none; }
 
         @media (max-width: 768px) { .grid-resumo { grid-template-columns: 1fr; } .valor-acumulado { font-size: 2.2rem; } }
     </style>
 </head>
 <body>
 
-    <header class="barra-topo"><div class="logo-axon">AXON</div></header>
-
-    <nav class="menu-abas">
-        <button class="item-aba ativa" onclick="abrirAba('aba-recebimentos', this)">RECEBIMENTOS</button>
-        <button class="item-aba" onclick="abrirAba('aba-pagamentos', this)">PAGAMENTOS</button>
-        <button class="item-aba" onclick="abrirAba('aba-tarefas', this)">TAREFAS</button>
-        <button class="item-aba" onclick="abrirAba('aba-cofre', this)">COFRE</button>
-        <button class="item-aba" onclick="abrirAba('aba-ideias', this)">IDEIAS</button>
-        <button class="item-aba" onclick="abrirAba('aba-download', this)">AXON DOWNLOAD</button>
-    </nav>
-
-    <main class="p-4 md:p-8 max-w-5xl mx-auto">
-
-        <section id="aba-recebimentos" class="secao-conteudo ativa">
-            <div class="grid-resumo">
-                <div class="resumo-card"><div class="resumo-label">A Receber</div><div id="total-receber" class="resumo-valor">R$ 0,00</div></div>
-                <div class="resumo-card"><div class="resumo-label">Total Recebido</div><div id="total-receb-pago" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
-                <div class="resumo-card"><div class="resumo-label">Em Atraso</div><div id="total-receb-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+    <main id="tela-auth">
+        <div class="logo-axon mb-12">AXON</div>
+        <div class="card-axon w-full max-w-sm">
+            <h2 class="titulo-lista"><span>●</span> Acesso Restrito</h2>
+            <input type="email" id="auth-email" class="axon-input" placeholder="SEU GMAIL:">
+            <input type="password" id="auth-senha" class="axon-input" placeholder="SUA SENHA:">
+            <div class="flex flex-col gap-3 mt-4">
+                <button onclick="fazerLogin()" class="btn-premium">ENTRAR</button>
+                <button onclick="fazerRegistro()" class="btn-premium" style="background: transparent; border: 1px solid var(--dourado); color: var(--dourado);">REGISTRAR NOVA CONTA</button>
             </div>
-            
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Registrar Devedor</h2>
-                <div class="axon-input-group"><input type="text" id="reg-nome" class="axon-input" placeholder="DEVEDOR:"></div>
-                <div class="axon-input-group"><input type="text" id="reg-valor" class="axon-input" placeholder="VALOR:"></div>
-                <div class="axon-input-group">
-                    <input type="text" id="reg-data" class="axon-input" placeholder="DATA:">
-                    <button class="btn-send" onclick="registrarDivida()">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z"/></svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Controle de Status</h2>
-                <div id="lista-status" class="mb-6"></div>
-                <div class="axon-input-group">
-                    <input type="text" id="input-update" class="axon-input" placeholder="Comando rápido (Ex: Raphael me pagou)">
-                    <button class="btn-send" onclick="processarComandoRapido('input-update', 'recebimento')">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <section id="aba-pagamentos" class="secao-conteudo">
-            <div class="grid-resumo">
-                <div class="resumo-card"><div class="resumo-label">Total a Pagar</div><div id="total-pagar" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
-                <div class="resumo-card"><div class="resumo-label">Total Pago</div><div id="total-pago-realizado" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
-                <div class="resumo-card"><div class="resumo-label">Boletos em Atraso</div><div id="total-pagar-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
-            </div>
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Minhas Contas a Pagar</h2>
-                <div class="axon-input-group"><input type="text" id="pag-nome" class="axon-input" placeholder="DESCRIÇÃO:"></div>
-                <div class="axon-input-group"><input type="text" id="pag-valor" class="axon-input" placeholder="VALOR:"></div>
-                <div class="axon-input-group">
-                    <input type="text" id="pag-data" class="axon-input" placeholder="DATA:">
-                    <button class="btn-send" onclick="registrarPagamento()">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z"/></svg>
-                    </button>
-                </div>
-            </div>
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Controle de Status (Pagamentos)</h2>
-                <div id="lista-status-pagamentos" class="mb-6"></div>
-                <div class="axon-input-group">
-                    <input type="text" id="input-update-pag" class="axon-input" placeholder="Ex: Paguei o Aluguel">
-                    <button class="btn-send" onclick="processarComandoRapido('input-update-pag', 'pagamento')">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <section id="aba-tarefas" class="secao-conteudo">
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Minhas Tarefas Diárias</h2>
-                <div class="axon-input-group">
-                    <input type="text" id="input-tarefa" class="axon-input" placeholder="Ex: ir para igreja sabado">
-                    <button class="btn-send" onclick="registrarTarefaBotao()">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
-                    </button>
-                </div>
-                <div id="lista-tarefas" class="mt-6"></div>
-            </div>
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Tarefas Concluídas</h2>
-                <div id="lista-tarefas-feitas"></div>
-            </div>
-        </section>
-
-        <section id="aba-cofre" class="secao-conteudo">
-            <div class="dash-cofre">
-                <div class="resumo-label">PATRIMÔNIO ACUMULADO</div>
-                <div id="valor-cofre-total" class="valor-acumulado">R$ 0,00</div>
-            </div>
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> NOVO APORTE NO COFRE</h2>
-                <div class="axon-input-group"><input type="text" id="cofre-valor" class="axon-input" placeholder="VALOR PARA GUARDAR:"></div>
-                <div class="axon-input-group">
-                    <input type="text" id="cofre-data" class="axon-input" placeholder="DATA:">
-                    <button class="btn-send" onclick="registrarNoCofre()">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
-                    </button>
-                </div>
-            </div>
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> HISTÓRICO DE CONSTRUÇÃO DE RIQUEZA</h2>
-                <div id="lista-cofre" class="space-y-3"></div>
-            </div>
-        </section>
-
-        <section id="aba-ideias" class="secao-conteudo">
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Mural de Insights</h2>
-                <div class="axon-input-group">
-                    <textarea id="input-ideia" class="axon-input h-32" placeholder="Escreva sua ideia ou insight aqui..."></textarea>
-                    <button class="btn-send" onclick="registrarIdeia()">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
-                    </button>
-                </div>
-                <div id="mural-ideias" class="mt-6"></div>
-            </div>
-        </section>
-
-        <section id="aba-download" class="secao-conteudo">
-            <div class="card-axon">
-                <h2 class="titulo-lista"><span>●</span> Baixar Aplicativo</h2>
-                <div id="conteudo-instalacao">
-                    <p class="text-sm text-gray-400 mb-4">Adicione o AXON à sua tela inicial para acesso rápido e seguro.</p>
-                    <button id="btnInstalar" class="btn-download-axon">ADICIONAR À TELA INICIAL</button>
-                </div>
-            </div>
-        </section>
-
+            <p id="auth-erro" class="text-red-500 text-[10px] mt-4 text-center"></p>
+        </div>
     </main>
+
+    <div id="tela-app">
+        <header class="barra-topo">
+            <div class="logo-axon">AXON</div>
+            <button onclick="fazerLogout()" class="absolute right-4 text-[10px] text-gray-500 font-bold border border-gray-800 p-1 rounded">SAIR</button>
+        </header>
+
+        <nav class="menu-abas">
+            <button class="item-aba ativa" onclick="abrirAba('aba-recebimentos', this)">RECEBIMENTOS</button>
+            <button class="item-aba" onclick="abrirAba('aba-pagamentos', this)">PAGAMENTOS</button>
+            <button class="item-aba" onclick="abrirAba('aba-tarefas', this)">TAREFAS</button>
+            <button class="item-aba" onclick="abrirAba('aba-cofre', this)">COFRE</button>
+            <button class="item-aba" onclick="abrirAba('aba-ideias', this)">IDEIAS</button>
+            <button class="item-aba" onclick="abrirAba('aba-download', this)">AXON DOWNLOAD</button>
+        </nav>
+
+        <main class="p-4 md:p-8 max-w-5xl mx-auto">
+
+            <section id="aba-recebimentos" class="secao-conteudo ativa">
+                <div class="grid-resumo">
+                    <div class="resumo-card"><div class="resumo-label">A Receber</div><div id="total-receber" class="resumo-valor">R$ 0,00</div></div>
+                    <div class="resumo-card"><div class="resumo-label">Total Recebido</div><div id="total-receb-pago" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
+                    <div class="resumo-card"><div class="resumo-label">Em Atraso</div><div id="total-receb-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+                </div>
+                
+                <div class="card-axon">
+                    <h2 class="titulo-lista"><span>●</span> Registrar Devedor</h2>
+                    <div class="axon-input-group"><input type="text" id="reg-nome" class="axon-input" placeholder="DEVEDOR:"></div>
+                    <div class="axon-input-group"><input type="text" id="reg-valor" class="axon-input" placeholder="VALOR:"></div>
+                    <div class="axon-input-group">
+                        <input type="text" id="reg-data" class="axon-input" placeholder="DATA:">
+                        <button class="btn-send" onclick="registrarDivida()">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-axon">
+                    <h2 class="titulo-lista"><span>●</span> Controle de Status</h2>
+                    <div id="lista-status" class="mb-6"></div>
+                    <div class="axon-input-group">
+                        <input type="text" id="input-update" class="axon-input" placeholder="Comando rápido (Ex: Raphael me pagou)">
+                        <button class="btn-send" onclick="processarComandoRapido('input-update', 'recebimento')">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="aba-pagamentos" class="secao-conteudo">
+                <div class="grid-resumo">
+                    <div class="resumo-card"><div class="resumo-label">Total a Pagar</div><div id="total-pagar" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+                    <div class="resumo-card"><div class="resumo-label">Total Pago</div><div id="total-pago-realizado" class="resumo-valor" style="color: #10b981;">R$ 0,00</div></div>
+                    <div class="resumo-card"><div class="resumo-label">Boletos em Atraso</div><div id="total-pagar-atraso" class="resumo-valor" style="color: #ef4444;">R$ 0,00</div></div>
+                </div>
+                <div class="card-axon">
+                    <h2 class="titulo-lista"><span>●</span> Minhas Contas a Pagar</h2>
+                    <div class="axon-input-group"><input type="text" id="pag-nome" class="axon-input" placeholder="DESCRIÇÃO:"></div>
+                    <div class="axon-input-group"><input type="text" id="pag-valor" class="axon-input" placeholder="VALOR:"></div>
+                    <div class="axon-input-group">
+                        <input type="text" id="pag-data" class="axon-input" placeholder="DATA:">
+                        <button class="btn-send" onclick="registrarPagamento()">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54L13.026 14.24a.5.5 0 0 1-.941.02l-2.73-6.55-6.55-2.73a.5.5 0 0 1 .02-.941L15.314.036a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 2.76 1.115-11.115L6.636 10.07Z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-axon">
+                    <h2 class="titulo-lista"><span>●</span> Controle de Status (Pagamentos)</h2>
+                    <div id="lista-status-pagamentos" class="mb-6"></div>
+                    <div class="axon-input-group">
+                        <input type="text" id="input-update-pag" class="axon-input" placeholder="Ex: Paguei o Aluguel">
+                        <button class="btn-send" onclick="processarComandoRapido('input-update-pag', 'pagamento')">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="aba-tarefas" class="secao-conteudo">
+                <div class="card-axon">
+                    <h2 class="titulo-lista"><span>●</span> Minhas Tarefas Diárias</h2>
+                    <div class="axon-input-group">
+                        <input type="text" id="input-tarefa" class="axon-input" placeholder="Ex: ir para igreja sabado">
+                        <button class="btn-send" onclick="registrarTarefaBotao()">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                        </button>
+                    </div>
+                    <div id="lista-tarefas" class="mt-6"></div>
+                </div>
+                <div class="card-axon">
+                    <h2 class="titulo-lista"><span>●</span> Tarefas Concluídas</h2>
+                    <div id="lista-tarefas-feitas"></div>
+                </div>
+            </section>
+
+            <section id="aba-cofre" class="secao-conteudo">
+                <div class="dash-cofre">
+                    <div class="resumo-label">PATRIMÔNIO ACUMULADO</div>
+                    <div id="valor-cofre-total" class="valor-acumulado">R$ 0,00</div>
+                </div>
+                <div class="card-axon">
+                    <h2 class="titulo-lista"><span>●</span> NOVO APORTE NO COFRE</h2>
+                    <div class="axon-input-group"><input type="text" id="cofre-valor" class="axon-input" placeholder="VALOR PARA GUARDAR:"></div>
+                    <div class="axon-input-group">
+                        <input type="text" id="cofre-data" class="axon-input" placeholder="DATA:">
+                        <button class="btn-send" onclick="registrarNoCofre()">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-axon">
+                    <h2 class="titulo-lista"><span>●</span> HISTÓRICO DE CONSTRUÇÃO DE RIQUEZA</h2>
+                    <div id="lista-cofre" class="space-y-3"></div>
+                </div>
+            </section>
+
+            <section id="aba-ideias" class="secao-conteudo">
+                <div class="card-axon">
+                    <h2 class="titulo-lista"><span>●</span> Mural de Insights</h2>
+                    <div class="axon-input-group">
+                        <textarea id="input-ideia" class="axon-input h-32" placeholder="Escreva sua ideia ou insight aqui..."></textarea>
+                        <button class="btn-send" onclick="registrarIdeia()">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/></svg>
+                        </button>
+                    </div>
+                    <div id="mural-ideias" class="mt-6"></div>
+                </div>
+            </section>
+
+            <section id="aba-download" class="secao-conteudo">
+                <div class="card-axon text-center">
+                    <h2 class="titulo-lista"><span>●</span> Instalação AXON</h2>
+                    <button id="btnInstalar" class="btn-premium">ADICIONAR À TELA INICIAL</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
 
     <script>
         // --- CONFIGURAÇÃO SUPABASE ---
         const SUPABASE_URL = 'https://zqvfnykxwlcozvawqgrn.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxdmZueWt4d2xjb3p2YXdxZ3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NDkzNDQsImV4cCI6MjA4NTMyNTM0NH0.CevpF9vP4748mb2vFNsOp5Kq6u7Nfp_100bJcW7ogUQ';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let userSession = null;
+
+        // --- LÓGICA DE AUTENTICAÇÃO ---
+        async function verificarSessao() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (session) {
+                userSession = session.user;
+                document.getElementById('tela-auth').style.display = 'none';
+                document.getElementById('tela-app').style.display = 'block';
+                carregarDados();
+            }
+        }
+
+        async function fazerLogin() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-senha').value;
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) document.getElementById('auth-erro').innerText = error.message;
+            else verificarSessao();
+        }
+
+        async function fazerRegistro() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-senha').value;
+            const { error } = await _supabase.auth.signUp({ email, password });
+            if (error) document.getElementById('auth-erro').innerText = error.message;
+            else alert("Verifique seu e-mail para confirmar o registro!");
+        }
+
+        async function fazerLogout() {
+            await _supabase.auth.signOut();
+            window.location.reload();
+        }
 
         function abrirAba(idAba, botao) {
             document.querySelectorAll('.secao-conteudo').forEach(s => s.classList.remove('ativa'));
@@ -324,11 +366,8 @@
             botao.classList.add('ativa');
         }
 
-        // --- BANCO DE DADOS (CACHE LOCAL) ---
-        let db_financeiro = [];
-        let db_cofre = [];
-        let db_tarefas = [];
-        let db_ideias = [];
+        // --- BANCO DE DADOS ---
+        let db_financeiro = [], db_cofre = [], db_tarefas = [], db_ideias = [];
 
         async function carregarDados() {
             const { data: fin } = await _supabase.from('financeiro').select('*');
@@ -513,44 +552,18 @@
             db_ideias.slice().sort((a,b) => b.id - a.id).forEach(i => { mural.innerHTML += `<div class="balao-ideia"><div class="header-ideia"><span style="font-size: 0.6rem; color: #666;">LOG: ${i.data}</span><div class="btn-lixeira" onclick="deletarItem('ideias', ${i.id})">🗑️</div></div><div class="corpo-ideia">${i.texto}</div></div>`; });
         }
 
-        // --- LÓGICA DE INSTALAÇÃO (BOTÃO DIRETO) ---
+        // INSTALAÇÃO
         let promptInstalacao;
-        const btnInstalar = document.getElementById('btnInstalar');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            promptInstalacao = e;
-            // O botão só aparece se o navegador disparar este evento
-            btnInstalar.style.display = 'block';
-        });
-
-        btnInstalar.addEventListener('click', async () => {
-            if (!promptInstalacao) {
-                alert("Para instalar, use a opção 'Adicionar à tela de início' no menu do seu navegador.");
-                return;
-            }
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); promptInstalacao = e; });
+        document.getElementById('btnInstalar').addEventListener('click', async () => {
+            if (!promptInstalacao) return;
             promptInstalacao.prompt();
             const { outcome } = await promptInstalacao.userChoice;
-            if (outcome === 'accepted') {
-                promptInstalacao = null;
-                btnInstalar.style.display = 'none';
-            }
+            if (outcome === 'accepted') promptInstalacao = null;
         });
 
-        // Caso o App já esteja instalado, remove o botão
-        window.addEventListener('appinstalled', () => {
-            btnInstalar.style.display = 'none';
-            promptInstalacao = null;
-        });
-
-        // Inicialização
-        carregarDados();
-
-        if ('serviceWorker' in navigator) { 
-            window.addEventListener('load', () => { 
-                navigator.serviceWorker.register('sw.js').catch(err => console.log("SW Erro:", err)); 
-            }); 
-        }
+        // INICIALIZAÇÃO
+        verificarSessao();
     </script>
 </body>
 </html>
