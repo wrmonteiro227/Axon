@@ -1,7 +1,7 @@
 {
-  "name": "AXON Gestão Premium",
+  "name": "AXON",
   "short_name": "AXON",
-  "start_url": "./index.html",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#050505",
   "theme_color": "#d4af37",
