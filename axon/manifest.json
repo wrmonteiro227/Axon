@@ -1,7 +1,8 @@
 {
   "name": "AXON Gestão Premium",
   "short_name": "AXON",
-  "start_url": "index.html",
+  "description": "Sistema de Gestão Financeira Premium",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#050505",
   "theme_color": "#d4af37",
